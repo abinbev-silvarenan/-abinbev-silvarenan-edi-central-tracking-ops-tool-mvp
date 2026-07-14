@@ -8,7 +8,7 @@ After enabling Pages (**Settings → Pages → Branch `main` / `/ (root)`**), th
 
 **https://abinbev-silvarenan.github.io/-abinbev-silvarenan-edi-central-tracking-ops-tool-mvp/**
 
-This repository includes a `.nojekyll` file so the `_shared/` assets folder is served correctly.
+This repository includes a `.nojekyll` file and serves assets from `shared/` (not `_shared/`) so GitHub Pages delivers all static files correctly.
 
 ## MVP scope (out of scope vs full prototype)
 
@@ -36,7 +36,7 @@ Or open `index.html` directly in a browser.
 
 ## Analytics dashboard
 
-Open `_shared/dashboard.html?id=edi-central-tracking-ops-tool-mvp` (same origin as the prototype) to view click tracking for this build.
+Open `shared/dashboard.html?id=edi-central-tracking-ops-tool-mvp` (same origin as the prototype) to view click tracking for this build.
 
 ## Full prototype
 

@@ -117,4 +117,4 @@ Confirmed against the HLR's Data Tracking section (Confluence page 6218907975). 
 
 ## Dashboard
 
-Open the [live dashboard](_shared/dashboard.html?id=edi-central-tracking-ops-tool) after clicking through the prototype locally — heatmap available via the **🗺 Heatmap** button on the dashboard toolbar.
+Open the [live dashboard](shared/dashboard.html?id=edi-central-tracking-ops-tool-mvp) after clicking through the prototype locally — heatmap available via the **🗺 Heatmap** button on the dashboard toolbar.

@@ -64,7 +64,7 @@ server.listen(PORT, '127.0.0.1', function() {
   console.log('');
   console.log('  Notification Center:  http://127.0.0.1:' + PORT + '/notification-center-v1/');
   console.log('  EDI Ops Tool:         http://127.0.0.1:' + PORT + '/');
-  console.log('  Dashboard:            http://127.0.0.1:' + PORT + '/_shared/dashboard.html?id=notification-center-v1');
+  console.log('  Dashboard:            http://127.0.0.1:' + PORT + '/shared/dashboard.html?id=notification-center-v1');
   console.log('');
   console.log('Press Ctrl+C to stop.');
 });
