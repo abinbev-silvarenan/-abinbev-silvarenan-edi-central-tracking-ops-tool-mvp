@@ -1,0 +1,358 @@
+/* ── Design tokens ─────────────────────────────────────────────────────── */
+:root {
+  --bg:      #0b0f17;
+  --panel:   #121826;
+  --panel-2: #1a2233;
+  --line:    #26314a;
+  --ink:     #e6ecf5;
+  --muted:   #8b97ad;
+  --accent:  #6aa6ff;
+  --good:    #3ddc97;
+  --warn:    #ffb454;
+  --bad:     #ff6b6b;
+}
+
+/* ── Reset ─────────────────────────────────────────────────────────────── */
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font: 14px/1.5 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+/* ── Layout ────────────────────────────────────────────────────────────── */
+.dash { max-width: 1200px; margin: 0 auto; padding: 28px 24px; }
+.dash h1 { margin: 0 0 4px; font-size: 22px; display: flex; align-items: center; gap: 8px; }
+.dash .sub { color: var(--muted); margin-bottom: 20px; font-size: 13px; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.card {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  padding: 16px;
+}
+.card h3 {
+  margin: 0 0 10px;
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: .07em;
+  color: var(--muted);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ── KPI cards ─────────────────────────────────────────────────────────── */
+.kpi { font-size: 28px; font-weight: 600; }
+.kpi small { display: block; font-size: 11px; color: var(--muted); font-weight: 400; margin-top: 4px; }
+
+/* ── Toolbar ───────────────────────────────────────────────────────────── */
+.toolbar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 16px; align-items: center; }
+
+.dash button {
+  background: var(--panel-2);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 7px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  line-height: 1;
+  transition: border-color 120ms ease;
+}
+.dash button:hover { border-color: var(--accent); }
+.dash button.danger { border-color: #5a2a2a; color: #ffb4b4; }
+.dash button.danger:hover { border-color: var(--bad); }
+
+.back-link {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 13px;
+  text-decoration: none;
+  align-self: center;
+}
+.back-link:hover { color: var(--ink); }
+
+/* ── Pill (variant badge) ───────────────────────────────────────────────── */
+.pill {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 400;
+}
+
+/* ── Hint icon (?) ─────────────────────────────────────────────────────── */
+.hint-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px; height: 16px;
+  border-radius: 50%;
+  background: var(--panel-2);
+  border: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 10px;
+  cursor: help;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* ── Tables ────────────────────────────────────────────────────────────── */
+.dash table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.dash th,
+.dash td { text-align: left; padding: 7px 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.dash tr:last-child td { border-bottom: none; }
+.dash th { color: var(--muted); font-weight: 500; font-size: 11px; text-transform: uppercase; letter-spacing: .05em; }
+.dash td.num, .dash th.num { text-align: right; font-variant-numeric: tabular-nums; }
+
+/* Progress bar inside cells */
+.bar { height: 4px; background: var(--panel-2); border-radius: 2px; overflow: hidden; margin-top: 5px; }
+.bar > span { display: block; height: 100%; background: var(--accent); border-radius: 2px; }
+
+/* "no data" placeholder row */
+.no-data { color: var(--muted); font-style: italic; }
+
+/* Hint text below a column heading */
+.col-hint { font-size: 11px; color: var(--muted); margin: -6px 0 10px; line-height: 1.4; }
+
+/* ── Track ID display ──────────────────────────────────────────────────── */
+/* Muted track ID shown below a human label */
+.track-id {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 11px;
+  color: var(--muted);
+}
+/* When there is no human label and we only have the track ID */
+.track-id-only {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 12px;
+  color: var(--ink);
+}
+
+/* ── Event type display ────────────────────────────────────────────────── */
+/* Colored dot before event type label */
+.evt-dot {
+  display: inline-block;
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  margin-right: 6px;
+  flex-shrink: 0;
+  vertical-align: middle;
+}
+
+/* Raw event type key shown in muted monospace after the human label */
+.type-raw {
+  display: block;
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 2px;
+}
+
+/* ── Hypothesis card ───────────────────────────────────────────────────── */
+.hypothesis-text {
+  font-size: 14px;
+  color: var(--muted);
+  font-style: italic;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* ── Event log ─────────────────────────────────────────────────────────── */
+.log-meta {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.events {
+  max-height: 440px;
+  overflow-y: auto;
+  font-size: 13px;
+}
+.events .row {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 6px 4px;
+  border-bottom: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.events .row:last-child { border-bottom: none; }
+
+/* Timestamp */
+.events .row .t {
+  font-family: ui-monospace, 'SFMono-Regular', Menlo, monospace;
+  font-size: 11px;
+  color: var(--accent);
+  flex-shrink: 0;
+  min-width: 72px;
+}
+
+/* Event type badge */
+.evt-badge {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  flex-shrink: 0;
+  white-space: nowrap;
+}
+
+/* Detail text */
+.evt-detail {
+  color: var(--ink);
+  font-size: 13px;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.evt-detail .track-id {
+  margin-left: 6px;
+}
+
+/* ── Glossary ──────────────────────────────────────────────────────────── */
+.glossary { margin-top: 14px; }
+
+.glossary-toggle {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0;
+  padding-bottom: 0;
+}
+.glossary-toggle:hover { color: var(--ink); }
+
+.caret {
+  font-size: 12px;
+  color: var(--muted);
+  transition: transform 200ms ease;
+}
+.glossary.open .caret { transform: rotate(90deg); }
+
+.glossary-body { display: none; margin-top: 14px; }
+.glossary.open .glossary-body { display: block; }
+
+.gloss-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 24px;
+}
+.gloss-grid h4 { margin: 0 0 6px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: .06em; }
+.gloss-hint { font-size: 12px; color: var(--muted); margin: 0 0 10px; line-height: 1.4; }
+.gloss-grid td { font-size: 12px; }
+.gloss-grid code { font-size: 12px; color: var(--accent); background: var(--panel-2); padding: 1px 5px; border-radius: 3px; }
+
+/* ── Heatmap view ──────────────────────────────────────────────────────── */
+
+/* Override the shared .dash max-width so the heatmap fills the window */
+.hm-dash {
+  max-width: 100%;
+  padding: 12px 20px;
+}
+
+/* Path selector label */
+.hm-path-label {
+  font-size: 12px;
+  color: var(--muted);
+  align-self: center;
+}
+
+/* Dropdown */
+#hm-path {
+  background: var(--panel-2);
+  color: var(--ink);
+  border: 1px solid var(--line);
+  padding: 6px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+  max-width: 340px;
+}
+#hm-path:hover { border-color: var(--accent); }
+
+/* Click count badge */
+.hm-count {
+  font-size: 12px;
+  color: var(--muted);
+  align-self: center;
+  margin-left: 4px;
+}
+
+/* Outer viewport — clips horizontal overflow only; vertical scrolls with the page */
+.hm-viewport {
+  width: 100%;
+  overflow-x: hidden;
+  overflow-y: visible;
+  background: #06080f;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  margin-bottom: 12px;
+}
+
+/* Inner container — exact px size of the prototype; scaled down by JS transform */
+.hm-container {
+  position: relative;
+  transform-origin: top left;
+  /* width / height / transform set by JS */
+}
+
+/* Prototype iframe — non-interactive, fills the container */
+.hm-container iframe {
+  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: none;
+  pointer-events: none;
+}
+
+/* Heatmap canvas — overlaid on top of the iframe */
+.hm-container canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+/* Legend bar */
+.hm-legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.hm-legend-bar {
+  flex: 0 0 200px;
+  height: 10px;
+  border-radius: 5px;
+  background: linear-gradient(to right,
+    rgb(0,0,200),
+    rgb(0,200,255),
+    rgb(0,210,80),
+    rgb(255,220,0),
+    rgb(255,0,0)
+  );
+}
+.hm-legend-label { font-size: 11px; }
+.hm-legend-note  { font-size: 11px; color: var(--muted); margin-left: 8px; }

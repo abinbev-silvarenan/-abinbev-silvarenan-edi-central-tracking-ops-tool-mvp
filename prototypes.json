@@ -1,0 +1,105 @@
+[
+  {
+    "id": "edi-central-tracking-ops-tool-mvp",
+    "name": "EDI Central Tracking — Operations (MVP)",
+    "hypothesis": "Vendor ops can triage blocked/rejected EDI orders and bulk reprocess by rule without line-level UPC/price fixes, bypass paths, or order-summary shortcuts.",
+    "createdAt": "2026-06-29",
+    "updatedAt": "2026-06-29",
+    "variant": "mvp",
+    "parentId": "edi-central-tracking-ops-tool",
+    "metrics": [
+      {
+        "id": "m1",
+        "name": "Triage depth",
+        "type": "primary",
+        "threshold": "≥ 40% of sessions open ≥ 1 order detail (item page)",
+        "tracks": ["row-open-items", "item_page_rendered"]
+      },
+      {
+        "id": "m2",
+        "name": "Ops filter use",
+        "type": "discovery",
+        "threshold": "≥ 70% of sessions apply ≥ 1 structured filter",
+        "tracks": ["filters_applied_explicit", "summary_card_clicked", "filter_from_rule_badge"]
+      },
+      {
+        "id": "m3",
+        "name": "Reprocess completion",
+        "type": "primary",
+        "threshold": "≥ 60% of reprocess opens on Blocked/Rejected orders end with reprocess_completed",
+        "tracks": ["reprocess_triggered", "reprocess_completed", "bulk_reprocess_completed"]
+      },
+      {
+        "id": "m4",
+        "name": "Bulk workflow adoption",
+        "type": "engagement",
+        "threshold": "≥ 25% of sessions that reprocess use bulk reprocess (including mixed-rule batches)",
+        "tracks": ["bulk_select_all_filtered", "bulk_reprocess_triggered", "bulk_reprocess_completed"]
+      }
+    ]
+  },
+  {
+    "id": "edi-central-tracking-ops-tool",
+    "name": "EDI Central Tracking — Operations (HLR BEESEDI-51860)",
+    "hypothesis": "Vendor ops analysts will resolve blocked/rejected EDI orders within SLA when the Link Admin tool exposes the full pipeline, the firing business rule, and a rule-specific corrective action in one click.",
+    "createdAt": "2026-05-12",
+    "updatedAt": "2026-05-26",
+    "hlr": "https://ab-inbev.atlassian.net/wiki/spaces/BLK/pages/6218907975",
+    "metrics": [
+      {
+        "id": "m1",
+        "name": "Triage depth",
+        "type": "primary",
+        "threshold": "≥ 40% of sessions open ≥ 1 order detail (drawer or item page)",
+        "tracks": ["row-open-items", "row-summary", "order_drawer_opened", "item_page_rendered"]
+      },
+      {
+        "id": "m2",
+        "name": "Ops filter use",
+        "type": "discovery",
+        "threshold": "≥ 70% of sessions apply ≥ 1 structured filter",
+        "tracks": ["filters_applied_explicit", "summary_card_clicked", "filter_from_rule_badge"]
+      },
+      {
+        "id": "m3",
+        "name": "Rule-specific action completion",
+        "type": "primary",
+        "threshold": "≥ 60% of drawer opens on Blocked/Rejected orders end with a reprocess_completed event",
+        "tracks": [
+          "drawer-action-poc_not_found",
+          "drawer-action-po_duplicated",
+          "drawer-action-upc_not_found",
+          "drawer-action-price_mismatch",
+          "drawer-action-invalid_packaging",
+          "drawer-action-sku_availability",
+          "drawer-action-invalid_delivery_range",
+          "drawer-action-invalid_delivery_window",
+          "drawer-action-min_order_quantity",
+          "drawer-action-max_order_quantity",
+          "reprocess_completed"
+        ]
+      },
+      {
+        "id": "m4",
+        "name": "Bulk workflow adoption",
+        "type": "engagement",
+        "threshold": "≥ 25% of sessions that reprocess use a bulk-rule path (same-rule batch)",
+        "tracks": ["bulk_select_all_filtered", "bulk_reprocess_triggered", "bulk_reprocess_completed"]
+      },
+      {
+        "id": "m5",
+        "name": "Resolution documentation",
+        "type": "engagement",
+        "threshold": "≥ 30% of sessions that open the drawer add ≥ 1 resolution note (facilitated tests)",
+        "tracks": ["resolution_note_dialog_opened", "resolution_note_added"]
+      }
+    ]
+  },
+  {
+    "id": "notification-center-v1",
+    "name": "Notification Center — V1",
+    "hypothesis": "Users who have a centralized notification center will act on alerts faster, reducing missed actions.",
+    "createdAt": "2026-05-14",
+    "metric": "≥ 60% of testers click the notification bell and mark at least one item as read within 60 seconds"
+  }
+]

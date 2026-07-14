@@ -1,0 +1,297 @@
+/**
+ * Hexa Design System — token port (Bees theme)
+ * Reverse-engineered from https://victorious-hill-0c21df90f.3.azurestaticapps.net
+ *
+ * Naming mirrors Hexa's Tailwind preset (bg-surface-primary, text-fg-neutral-primary,
+ * gap-md, rounded-lg, elevation-neutral, …) so prototypes use the same vocabulary
+ * as production.
+ */
+
+/* ------------------------------------------------------------------ */
+/* 1. Fonts                                                            */
+/* ------------------------------------------------------------------ */
+@font-face {
+  font-family: 'Barlow';
+  src: url('./fonts/Barlow-SemiBold.ttf') format('truetype');
+  font-weight: 400 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Work Sans';
+  src: url('./fonts/WorkSans-VariableFont_wght.ttf') format('truetype-variations');
+  font-weight: 100 900;
+  font-display: swap;
+}
+
+/* ------------------------------------------------------------------ */
+/* 2. Tokens                                                           */
+/* ------------------------------------------------------------------ */
+:root {
+  /* Type families */
+  --hexa-font-header: 'Barlow', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --hexa-font-body: 'Work Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* Bees brand palette (yellow-warm theme) */
+  --hexa-brand-50:  #FFF8E1;
+  --hexa-brand-100: #FFECB3;
+  --hexa-brand-200: #FFE082;
+  --hexa-brand-300: #FFD54F;
+  --hexa-brand-400: #FFCA28;
+  --hexa-brand-500: #FFC000; /* Bees yellow */
+  --hexa-brand-600: #FFB300;
+  --hexa-brand-700: #FFA000;
+  --hexa-brand-800: #FF8F00;
+  --hexa-brand-900: #FF6F00;
+
+  /* Neutral ramp */
+  --hexa-neutral-0:   #FFFFFF;
+  --hexa-neutral-50:  #FAFAFA;
+  --hexa-neutral-100: #F2F2F2;
+  --hexa-neutral-200: #E5E5E5;
+  --hexa-neutral-300: #D4D4D4;
+  --hexa-neutral-400: #A3A3A3;
+  --hexa-neutral-500: #737373;
+  --hexa-neutral-600: #525252;
+  --hexa-neutral-700: #404040;
+  --hexa-neutral-800: #262626;
+  --hexa-neutral-900: #171717;
+  --hexa-neutral-1000: #000000;
+
+  /* Semantic surfaces */
+  --hexa-surface-primary:    var(--hexa-neutral-0);
+  --hexa-surface-secondary:  var(--hexa-neutral-100);
+  --hexa-surface-tertiary:   var(--hexa-neutral-200);
+  --hexa-surface-inverse:    var(--hexa-neutral-900);
+
+  /* Semantic foregrounds */
+  --hexa-fg-neutral-primary:    var(--hexa-neutral-900);
+  --hexa-fg-neutral-secondary:  var(--hexa-neutral-700);
+  --hexa-fg-neutral-tertiary:   var(--hexa-neutral-500);
+  --hexa-fg-neutral-disabled:   var(--hexa-neutral-400);
+  --hexa-fg-on-inverse:         var(--hexa-neutral-0);
+  --hexa-fg-on-brand:           var(--hexa-neutral-900);
+
+  /* Borders */
+  --hexa-border-input:    var(--hexa-neutral-300);
+  --hexa-border-default:  var(--hexa-neutral-200);
+  --hexa-border-strong:   var(--hexa-neutral-400);
+
+  /* Status */
+  --hexa-status-success: #2D7D32;
+  --hexa-status-success-bg: #E8F5E9;
+  --hexa-status-warning: #F57C00;
+  --hexa-status-warning-bg: #FFF3E0;
+  --hexa-status-error:   #D32F2F;
+  --hexa-status-error-bg: #FFEBEE;
+  --hexa-status-info:    #1976D2;
+  --hexa-status-info-bg: #E3F2FD;
+
+  /* Spacing scale (matches Tailwind 2xs/xs/sm/md/lg/xl/2xl/3xl/4xl) */
+  --hexa-space-2xs: 0.125rem;  /* 2  */
+  --hexa-space-xs:  0.25rem;   /* 4  */
+  --hexa-space-sm:  0.5rem;    /* 8  */
+  --hexa-space-md:  0.75rem;   /* 12 */
+  --hexa-space-lg:  1rem;      /* 16 */
+  --hexa-space-xl:  1.5rem;    /* 24 */
+  --hexa-space-2xl: 2rem;      /* 32 */
+  --hexa-space-3xl: 3rem;      /* 48 */
+  --hexa-space-4xl: 4rem;      /* 64 */
+
+  /* Radii */
+  --hexa-radius-xs:   2px;
+  --hexa-radius-sm:   4px;
+  --hexa-radius-md:   8px;
+  --hexa-radius-lg:   12px;
+  --hexa-radius-xl:   16px;
+  --hexa-radius-pill: 999px;
+
+  /* Borders */
+  --hexa-border-w-sm: 1px;
+  --hexa-border-w-md: 2px;
+  --hexa-border-w-lg: 3px;
+
+  /* Elevation */
+  --hexa-elevation-0:        none;
+  --hexa-elevation-neutral:  0 1px 2px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.06);
+  --hexa-elevation-neutral-strong: 0 4px 12px rgba(0, 0, 0, 0.12), 0 8px 24px rgba(0, 0, 0, 0.08);
+  --hexa-elevation-other:    0 0 0 1px rgba(0, 0, 0, 0.04), 0 8px 24px rgba(0, 0, 0, 0.10);
+  --hexa-elevation-valid:    0 0 0 2px rgba(45, 125, 50, 0.20);
+
+  /* Type ramp — header (Barlow) */
+  --hexa-text-display:   { size: 56px; line-height: 1.05; weight: 700; letter-spacing: -0.02em; }
+  --hexa-text-display-size:        56px;
+  --hexa-text-headline-size:       40px;
+  --hexa-text-h1-size:             32px;
+  --hexa-text-h2-size:             28px;
+  --hexa-text-h3-size:             24px;
+  --hexa-text-h4-size:             20px;
+  --hexa-text-h5-size:             18px;
+  --hexa-text-h6-size:             16px;
+
+  /* Type ramp — body (Work Sans) */
+  --hexa-text-body-lg-size:        18px;
+  --hexa-text-body-md-size:        16px;
+  --hexa-text-body-sm-size:        14px;
+  --hexa-text-body-xs-size:        12px;
+  --hexa-text-caption-size:        11px;
+
+  /* Animations */
+  --hexa-duration-fast: 120ms;
+  --hexa-duration-base: 200ms;
+  --hexa-easing: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ------------------------------------------------------------------ */
+/* 3. Base                                                             */
+/* ------------------------------------------------------------------ */
+*, *::before, *::after { box-sizing: border-box; }
+html, body {
+  margin: 0;
+  font-family: var(--hexa-font-body);
+  font-size: var(--hexa-text-body-md-size);
+  line-height: 1.5;
+  color: var(--hexa-fg-neutral-primary);
+  background: var(--hexa-surface-primary);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+h1, h2, h3, h4, h5, h6, .hexa-display, .hexa-headline {
+  font-family: var(--hexa-font-header);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -0.01em;
+  margin: 0;
+  color: var(--hexa-fg-neutral-primary);
+}
+.hexa-display  { font-size: var(--hexa-text-display-size);  letter-spacing: -0.02em; line-height: 1.05; }
+.hexa-headline { font-size: var(--hexa-text-headline-size); }
+h1 { font-size: var(--hexa-text-h1-size); }
+h2 { font-size: var(--hexa-text-h2-size); }
+h3 { font-size: var(--hexa-text-h3-size); }
+h4 { font-size: var(--hexa-text-h4-size); }
+h5 { font-size: var(--hexa-text-h5-size); }
+h6 { font-size: var(--hexa-text-h6-size); }
+
+p { margin: 0 0 var(--hexa-space-md) 0; }
+a { color: inherit; }
+
+/* ------------------------------------------------------------------ */
+/* 4. Body text helpers                                                */
+/* ------------------------------------------------------------------ */
+.text-body-lg          { font-size: var(--hexa-text-body-lg-size); font-weight: 400; }
+.text-body-md          { font-size: var(--hexa-text-body-md-size); font-weight: 400; }
+.text-body-sm          { font-size: var(--hexa-text-body-sm-size); font-weight: 400; }
+.text-body-xs          { font-size: var(--hexa-text-body-xs-size); font-weight: 400; }
+.text-body-bold-lg     { font-size: var(--hexa-text-body-lg-size); font-weight: 700; }
+.text-body-bold-md     { font-size: var(--hexa-text-body-md-size); font-weight: 700; }
+.text-body-bold-sm     { font-size: var(--hexa-text-body-sm-size); font-weight: 700; }
+.text-body-bold-xs     { font-size: var(--hexa-text-body-xs-size); font-weight: 700; }
+.text-body-regular-xs  { font-size: var(--hexa-text-body-xs-size); font-weight: 400; }
+.text-caption          { font-size: var(--hexa-text-caption-size); font-weight: 400; }
+
+/* Foreground colors as utilities */
+.text-fg-neutral-primary   { color: var(--hexa-fg-neutral-primary); }
+.text-fg-neutral-secondary { color: var(--hexa-fg-neutral-secondary); }
+.text-fg-neutral-tertiary  { color: var(--hexa-fg-neutral-tertiary); }
+.text-neutral-primary      { color: var(--hexa-fg-neutral-primary); }
+
+/* Surface colors as utilities */
+.bg-surface-primary   { background: var(--hexa-surface-primary); }
+.bg-surface-secondary { background: var(--hexa-surface-secondary); }
+.bg-surface-tertiary  { background: var(--hexa-surface-tertiary); }
+.bg-surface-inverse   { background: var(--hexa-surface-inverse); color: var(--hexa-fg-on-inverse); }
+
+/* Borders */
+.border-input          { border-color: var(--hexa-border-input); }
+.border-default        { border-color: var(--hexa-border-default); }
+.border-sm             { border-width: var(--hexa-border-w-sm); }
+.border-md             { border-width: var(--hexa-border-w-md); }
+.border-style-solid    { border-style: solid; }
+
+/* Radii */
+.rounded-xs   { border-radius: var(--hexa-radius-xs); }
+.rounded-sm   { border-radius: var(--hexa-radius-sm); }
+.rounded-md   { border-radius: var(--hexa-radius-md); }
+.rounded-lg   { border-radius: var(--hexa-radius-lg); }
+.rounded-xl   { border-radius: var(--hexa-radius-xl); }
+.rounded-pill { border-radius: var(--hexa-radius-pill); }
+
+/* Elevation */
+.elevation-none            { box-shadow: var(--hexa-elevation-0); }
+.elevation-neutral         { box-shadow: var(--hexa-elevation-neutral); }
+.elevation-neutral-strong  { box-shadow: var(--hexa-elevation-neutral-strong); }
+.elevation-other           { box-shadow: var(--hexa-elevation-other); }
+
+/* ------------------------------------------------------------------ */
+/* 5. Spacing utilities (subset matching Tailwind shorthand)           */
+/* ------------------------------------------------------------------ */
+.gap-2xs { gap: var(--hexa-space-2xs); }
+.gap-xs  { gap: var(--hexa-space-xs); }
+.gap-sm  { gap: var(--hexa-space-sm); }
+.gap-md  { gap: var(--hexa-space-md); }
+.gap-lg  { gap: var(--hexa-space-lg); }
+.gap-xl  { gap: var(--hexa-space-xl); }
+.gap-2xl { gap: var(--hexa-space-2xl); }
+.gap-3xl { gap: var(--hexa-space-3xl); }
+.gap-4xl { gap: var(--hexa-space-4xl); }
+
+.p-xs    { padding: var(--hexa-space-xs); }
+.p-sm    { padding: var(--hexa-space-sm); }
+.p-md    { padding: var(--hexa-space-md); }
+.p-lg    { padding: var(--hexa-space-lg); }
+.p-xl    { padding: var(--hexa-space-xl); }
+.p-2xl   { padding: var(--hexa-space-2xl); }
+.px-xs { padding-left: var(--hexa-space-xs); padding-right: var(--hexa-space-xs); }
+.px-sm { padding-left: var(--hexa-space-sm); padding-right: var(--hexa-space-sm); }
+.px-md { padding-left: var(--hexa-space-md); padding-right: var(--hexa-space-md); }
+.px-lg { padding-left: var(--hexa-space-lg); padding-right: var(--hexa-space-lg); }
+.px-2xs { padding-left: var(--hexa-space-2xs); padding-right: var(--hexa-space-2xs); }
+.py-xs { padding-top: var(--hexa-space-xs); padding-bottom: var(--hexa-space-xs); }
+.py-sm { padding-top: var(--hexa-space-sm); padding-bottom: var(--hexa-space-sm); }
+.py-md { padding-top: var(--hexa-space-md); padding-bottom: var(--hexa-space-md); }
+.py-2xs { padding-top: var(--hexa-space-2xs); padding-bottom: var(--hexa-space-2xs); }
+
+.mb-2xs { margin-bottom: var(--hexa-space-2xs); }
+.mb-xs  { margin-bottom: var(--hexa-space-xs); }
+.mb-sm  { margin-bottom: var(--hexa-space-sm); }
+.mb-md  { margin-bottom: var(--hexa-space-md); }
+.mb-lg  { margin-bottom: var(--hexa-space-lg); }
+.mb-xl  { margin-bottom: var(--hexa-space-xl); }
+.mb-4xl { margin-bottom: var(--hexa-space-4xl); }
+.mt-2xs { margin-top: var(--hexa-space-2xs); }
+.mt-xs  { margin-top: var(--hexa-space-xs); }
+.mt-sm  { margin-top: var(--hexa-space-sm); }
+.mt-md  { margin-top: var(--hexa-space-md); }
+.mt-lg  { margin-top: var(--hexa-space-lg); }
+.mt-xl  { margin-top: var(--hexa-space-xl); }
+
+/* ------------------------------------------------------------------ */
+/* 6. Layout primitives                                                */
+/* ------------------------------------------------------------------ */
+.flex             { display: flex; }
+.flex-col         { flex-direction: column; }
+.flex-wrap        { flex-wrap: wrap; }
+.items-center     { align-items: center; }
+.items-start      { align-items: flex-start; }
+.items-end        { align-items: flex-end; }
+.items-stretch    { align-items: stretch; }
+.justify-center   { justify-content: center; }
+.justify-between  { justify-content: space-between; }
+.justify-end      { justify-content: flex-end; }
+.grid             { display: grid; }
+.grid-cols-2      { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-3      { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-cols-4      { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.place-items-center { place-items: center; }
+.w-full           { width: 100%; }
+.w-fit            { width: fit-content; }
+.min-h-screen     { min-height: 100vh; }
+.cursor-pointer   { cursor: pointer; }
+.transition-colors { transition: background-color var(--hexa-duration-base) var(--hexa-easing), color var(--hexa-duration-base) var(--hexa-easing), border-color var(--hexa-duration-base) var(--hexa-easing); }
+
+/* Focus ring (accessible) */
+:focus-visible {
+  outline: 2px solid var(--hexa-brand-700);
+  outline-offset: 2px;
+  border-radius: var(--hexa-radius-sm);
+}

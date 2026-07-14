@@ -1,0 +1,2822 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>BEES one — EDI Central Tracking (MVP)</title>
+  <link rel="stylesheet" href="_shared/hexa-tokens.css" />
+  <link rel="stylesheet" href="_shared/hexa-components.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <script src="_shared/hexa.js" defer></script>
+  <script src="data.js"></script>
+  <script src="i18n.js"></script>
+  <script
+    src="_shared/hypothesis-tracker.js"
+    data-prototype-id="edi-central-tracking-ops-tool-mvp"
+    data-hypothesis="MVP: vendor ops can triage EDI orders and bulk reprocess by rule without line-level UPC/price fixes, bypass paths, or order summary drawer."
+    data-variant="mvp"></script>
+</head>
+<body>
+  <div class="bees-one-app">
+    <!-- LEFT RAIL SIDEBAR -->
+    <aside class="bees-one-rail" aria-label="Module navigation">
+      <button type="button" class="bees-one-rail__toggle" title="Expand menu">
+        <hexa-icon name="ChevronRightIcon"></hexa-icon>
+      </button>
+      <div class="bees-one-rail__stack">
+        <a href="#home" class="bees-one-rail__link bees-one-rail__link--active" id="railHome" title="Home">
+          <hexa-icon name="HomeIcon"></hexa-icon>
+        </a>
+        <a href="#orders" class="bees-one-rail__link" id="railEdi" title="EDI Tracking">
+          <hexa-icon name="ClipboardIcon"></hexa-icon>
+        </a>
+        <a href="#" class="bees-one-rail__link" title="Catalog" onclick="event.preventDefault()">
+          <hexa-icon name="AppGridIcon"></hexa-icon>
+        </a>
+        <a href="#" class="bees-one-rail__link" title="Customer list" onclick="event.preventDefault()">
+          <hexa-icon name="UsersIcon"></hexa-icon>
+        </a>
+        <a href="#" class="bees-one-rail__link" title="Agreements" onclick="event.preventDefault()">
+          <hexa-icon name="CalendarIcon"></hexa-icon>
+        </a>
+        <a href="#" class="bees-one-rail__link" title="Chain management" onclick="event.preventDefault()">
+          <hexa-icon name="BuildingIcon"></hexa-icon>
+        </a>
+        <a href="#" class="bees-one-rail__link" title="Offers" onclick="event.preventDefault()">
+          <hexa-icon name="TagIcon"></hexa-icon>
+        </a>
+        <a href="#" class="bees-one-rail__link" title="Campaigns" onclick="event.preventDefault()">
+          <hexa-icon name="MegaphoneIcon"></hexa-icon>
+        </a>
+      </div>
+      <div class="bees-one-rail__spacer"></div>
+      <div class="bees-one-rail__bottom">
+        <button type="button" class="bees-one-rail__link" title="Back" onclick="if(history.length>1)history.back()">
+          <hexa-icon name="ArrowLeftIcon"></hexa-icon>
+        </button>
+      </div>
+    </aside>
+
+    <!-- MAIN COLUMN -->
+    <div class="bees-one-main-col">
+
+      <!-- TOP HEADER BAR -->
+      <header class="bees-topbar bees-topbar--one">
+        <div class="bees-topbar-inner">
+          <a class="bees-one-brand" href="#home" aria-label="BEES one home">
+            <span class="bees-one-brand__bars" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </span>
+            <span class="bees-one-brand__product">one</span>
+          </a>
+          <div class="lang-switcher" id="langSwitcher">
+            <button type="button" class="bees-one-module-pill" id="langToggle"
+              data-track="lang-menu-toggle" data-i18n-aria="lang.menu" aria-label="Language" aria-expanded="false"
+              aria-haspopup="true" onclick="toggleLangMenu(event)">
+              <span class="bees-one-module-pill__icon"><hexa-icon name="GlobeIcon"></hexa-icon></span>
+              <hexa-icon name="ChevronDownIcon" class="bees-one-module-pill__caret"></hexa-icon>
+            </button>
+            <div class="lang-switcher-menu" id="langMenu" role="menu" hidden>
+              <button type="button" class="lang-switcher-option" role="menuitemradio" data-lang="en"
+                data-track="lang-select-en" onclick="setLanguage('en')">English</button>
+              <button type="button" class="lang-switcher-option" role="menuitemradio" data-lang="es"
+                data-track="lang-select-es" onclick="setLanguage('es')">Español</button>
+            </div>
+          </div>
+          <span class="bees-topbar-spacer"></span>
+          <button type="button" class="bees-toolbar-btn" aria-label="Notifications">
+            <hexa-icon name="BellIcon"></hexa-icon>
+          </button>
+          <button type="button" class="bees-user-chip" aria-label="User menu">
+            <span class="bees-user-chip__avatar">HX</span>
+          </button>
+        </div>
+      </header>
+
+      <!-- CONTENT AREA -->
+      <div class="app-shell">
+
+        <!-- SCREEN 1: Link admin landing page -->
+        <section id="home" data-screen>
+          <div class="link-admin-page">
+            <h1 class="link-admin-title">Link admin</h1>
+            <p class="link-admin-subtitle">Access and manage the team's plans and customer information.</p>
+            <div class="link-admin-cards">
+              <a href="#" class="link-admin-card" onclick="event.preventDefault()">
+                <span class="link-admin-card__icon"><hexa-icon name="StoreIcon"></hexa-icon></span>
+                <div class="link-admin-card__body">
+                  <span class="link-admin-card__title">Commercial control</span>
+                  <span class="link-admin-card__desc">Track priority information from chains and stores.</span>
+                </div>
+              </a>
+              <a href="#" class="link-admin-card" onclick="event.preventDefault()">
+                <span class="link-admin-card__icon"><hexa-icon name="GlobeIcon"></hexa-icon></span>
+                <div class="link-admin-card__body">
+                  <span class="link-admin-card__title">Chain management</span>
+                  <span class="link-admin-card__desc">Add or remove POCs from chains.</span>
+                </div>
+              </a>
+              <a href="#" class="link-admin-card" onclick="event.preventDefault()">
+                <span class="link-admin-card__icon"><hexa-icon name="UsersIcon"></hexa-icon></span>
+                <div class="link-admin-card__body">
+                  <span class="link-admin-card__title">Customer list</span>
+                  <span class="link-admin-card__desc">Manage KAMs or BDRs customers catalog.</span>
+                </div>
+              </a>
+              <a href="#" class="link-admin-card" onclick="event.preventDefault()">
+                <span class="link-admin-card__icon"><hexa-icon name="DocumentCheckIcon"></hexa-icon></span>
+                <div class="link-admin-card__body">
+                  <span class="link-admin-card__title">Commercial agreements</span>
+                  <span class="link-admin-card__desc">Manage and track customers JBP contracts.</span>
+                </div>
+              </a>
+              <a href="#" class="link-admin-card" onclick="event.preventDefault()">
+                <span class="link-admin-card__icon"><hexa-icon name="MegaphoneIcon"></hexa-icon></span>
+                <div class="link-admin-card__body">
+                  <span class="link-admin-card__title">Campaigns</span>
+                  <span class="link-admin-card__desc">Manage and track campaigns.</span>
+                </div>
+              </a>
+              <a href="#" class="link-admin-card" onclick="event.preventDefault()">
+                <span class="link-admin-card__icon"><hexa-icon name="TagIcon"></hexa-icon></span>
+                <div class="link-admin-card__body">
+                  <span class="link-admin-card__title">Offers</span>
+                  <span class="link-admin-card__desc">Create and manage offers.</span>
+                </div>
+              </a>
+              <a href="#orders" class="link-admin-card">
+                <span class="link-admin-card__icon"><hexa-icon name="SyncIcon"></hexa-icon></span>
+                <div class="link-admin-card__body">
+                  <span class="link-admin-card__title">EDI Central Tracking</span>
+                  <span class="link-admin-card__desc">Monitor and manage EDI order processing, reprocess failures, and track delivery status.</span>
+                </div>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        <!-- SCREEN 2: EDI Central Tracking (orders list) -->
+        <section id="orders" data-screen hidden>
+          <h1 class="page-title" data-i18n="page.ediTitle">EDI Central Tracking</h1>
+          <p class="mvp-banner" data-i18n="page.mvpBanner">MVP preview</p>
+
+          <!-- Filter (collapsed by default) -->
+          <div class="filter-block" id="filterBlock">
+            <button type="button" class="filter-toggle" id="filterToggle" data-track="cta-toggle-filters" onclick="toggleFilterPanel()" aria-expanded="false">
+              <hexa-icon name="FilterIcon"></hexa-icon>
+              <span data-i18n="filter.toggle">Filter</span>
+              <hexa-icon name="ChevronDownIcon" class="caret"></hexa-icon>
+            </button>
+
+            <form class="filters" id="filterForm" autocomplete="off" onsubmit="event.preventDefault();applyFilters()" hidden>
+              <div class="filters-row">
+                <div class="hexa-field">
+                  <span class="hexa-label" data-i18n="filter.status">Status</span>
+                  <div class="dropdown" id="statusDropdown">
+                    <button type="button" class="dropdown-trigger" data-track="filter-open-status" onclick="toggleDropdown('statusDropdown')">
+                      <span id="statusLabel" class="placeholder">All statuses</span>
+                      <hexa-icon name="ChevronDownIcon"></hexa-icon>
+                    </button>
+                    <div class="dropdown-panel" id="statusPanel"></div>
+                  </div>
+                </div>
+                <div class="hexa-field">
+                  <span class="hexa-label" data-i18n="filter.rule">Business rule</span>
+                  <div class="dropdown" id="ruleDropdown">
+                    <button type="button" class="dropdown-trigger" data-track="filter-open-rule" onclick="toggleDropdown('ruleDropdown')">
+                      <span id="ruleLabel" class="placeholder">All rules</span>
+                      <hexa-icon name="ChevronDownIcon"></hexa-icon>
+                    </button>
+                    <div class="dropdown-panel" id="rulePanel"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="filters-row">
+                <div class="hexa-field">
+                  <span class="hexa-label" data-i18n="filter.poc">POC</span>
+                  <div class="dropdown" id="pocDropdown">
+                    <button type="button" class="dropdown-trigger" data-track="filter-open-poc" onclick="toggleDropdown('pocDropdown')">
+                      <span id="pocLabel" class="placeholder">All POCs</span>
+                      <hexa-icon name="ChevronDownIcon"></hexa-icon>
+                    </button>
+                    <div class="dropdown-panel" id="pocPanel"></div>
+                  </div>
+                </div>
+                <div class="hexa-field">
+                  <span class="hexa-label" data-i18n="filter.retailer">Chain</span>
+                  <div class="dropdown" id="retailerDropdown">
+                    <button type="button" class="dropdown-trigger" data-track="filter-open-retailer" onclick="toggleDropdown('retailerDropdown')">
+                      <span id="retailerLabel" class="placeholder">All chains</span>
+                      <hexa-icon name="ChevronDownIcon"></hexa-icon>
+                    </button>
+                    <div class="dropdown-panel" id="retailerPanel"></div>
+                  </div>
+                </div>
+              </div>
+              <div class="filters-row">
+                <div class="hexa-field">
+                  <span class="hexa-label" data-i18n="filter.poNumber">PO number</span>
+                  <span class="hexa-input-wrap">
+                    <hexa-icon name="SearchIcon"></hexa-icon>
+                    <input class="hexa-input" id="poInput" data-i18n-placeholder="filter.poPlaceholder" placeholder="e.g. 12345678" inputmode="numeric" />
+                  </span>
+                </div>
+                <div class="hexa-field">
+                  <span class="hexa-label" data-i18n="filter.beesOrder">BEES order number</span>
+                  <span class="hexa-input-wrap">
+                    <hexa-icon name="SearchIcon"></hexa-icon>
+                    <input class="hexa-input" id="beesInput" data-i18n-placeholder="filter.beesPlaceholder" placeholder="e.g. BEES-1234567890" />
+                  </span>
+                </div>
+              </div>
+              <div class="filters-row">
+                <div class="hexa-field">
+                  <span class="hexa-label" data-i18n="filter.receiveDate">Receive date (max 90 days · default last 30 days)</span>
+                  <div class="period-row">
+                    <span class="hexa-input-wrap"><input class="hexa-input" id="dateFrom" type="date" /></span>
+                    <span class="text-fg-neutral-tertiary">→</span>
+                    <span class="hexa-input-wrap"><input class="hexa-input" id="dateTo" type="date" /></span>
+                  </div>
+                </div>
+                <div class="hexa-field">
+                  <span class="hexa-label" data-i18n="filter.expirationDate">Expiration date</span>
+                  <div class="period-row">
+                    <span class="hexa-input-wrap"><input class="hexa-input" id="expirationFrom" type="date" /></span>
+                    <span class="text-fg-neutral-tertiary">→</span>
+                    <span class="hexa-input-wrap"><input class="hexa-input" id="expirationTo" type="date" /></span>
+                  </div>
+                </div>
+              </div>
+              <div class="filter-actions">
+                <div class="left">
+                  <button type="submit" id="applyBtn" class="hexa-btn hexa-btn--primary" data-track="cta-apply-filters">
+                    <hexa-icon name="FilterIcon"></hexa-icon>
+                    <span data-i18n="filter.apply">Apply filters</span>
+                  </button>
+                  <button type="button" class="hexa-btn hexa-btn--tertiary" data-track="cta-clear-filters" onclick="clearFilters()"><span data-i18n="filter.clearAll">Clear all</span></button>
+                </div>
+                <div class="text-body-xs text-fg-neutral-tertiary" id="periodHint"></div>
+              </div>
+            </form>
+          </div>
+
+          <div class="orders-panel">
+          <!-- Overview KPI cards -->
+          <div class="summary-cards" id="summaryCards" role="region" aria-label="Order summary"></div>
+
+          <!-- Active filter chips -->
+          <div class="result-bar" id="resultBar" hidden>
+            <div class="chip-row" id="activeFilters"></div>
+          </div>
+
+          <!-- Bulk actions toolbar — reprocess any blocked/rejected selection (mixed rules OK) -->
+          <div class="bulk-bar" id="bulkBar">
+            <label class="bulk-select-all hexa-check">
+              <input type="checkbox" id="bulkSelectAll" data-track="bulk-select-all" onchange="toggleSelectAllOnPage()" />
+              <span id="bulkSelectAllLabel" data-i18n="bulk.selectAll">Select all on this page</span>
+            </label>
+            <span class="bulk-rule-hint text-body-xs text-fg-neutral-tertiary" id="bulkRuleHint"></span>
+            <div class="bulk-actions">
+              <span class="bulk-count" id="bulkCount">0 selected</span>
+              <button type="button" class="hexa-btn hexa-btn--primary hexa-btn--sm" id="bulkReprocessBtn" data-track="cta-bulk-reprocess" onclick="reprocessSelected()" disabled>
+                <hexa-icon name="SyncIcon"></hexa-icon>
+                <span id="bulkReprocessLabel" data-i18n="bulk.reprocess">Reprocess selected</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- List + pagination -->
+          <div id="tableWrap"></div>
+          </div><!-- /.orders-panel -->
+
+          <!-- Empty state -->
+          <template id="emptyTpl">
+            <div class="hexa-empty">
+              <hexa-illustration name="NoSearchResults"></hexa-illustration>
+              <h3 data-i18n="empty.title">No orders match your filters</h3>
+              <p data-i18n="empty.body">Try widening the period or clearing some filters.</p>
+              <button class="hexa-btn hexa-btn--secondary" data-track="cta-empty-clear" onclick="clearFilters()"><span data-i18n="empty.clear">Clear all filters</span></button>
+            </div>
+          </template>
+        </section>
+
+        <!-- SCREEN 3: Order details (item-level page) -->
+        <section id="orderItems" data-screen hidden>
+          <div class="order-details-band">
+            <div class="order-details-band-inner">
+              <nav class="order-details-breadcrumb" aria-label="Breadcrumb">
+                <a href="#orders" class="crumb crumb--icon" data-track="item-breadcrumb-home" aria-label="Home">
+                  <hexa-icon name="HomeIcon"></hexa-icon>
+                </a>
+                <hexa-icon name="ChevronRightIcon" class="crumb-sep"></hexa-icon>
+                <a href="#orders" class="crumb" data-track="item-breadcrumb-orders" data-i18n="page.ediTitle">EDI Central Tracking</a>
+                <hexa-icon name="ChevronRightIcon" class="crumb-sep"></hexa-icon>
+                <span class="crumb crumb--current" aria-current="page" data-i18n="page.orderDetails">Order details</span>
+              </nav>
+              <div class="order-details-band-row">
+                <h1 class="order-details-title" data-i18n="page.orderDetails">Order details</h1>
+                <div class="order-details-band-actions">
+                  <button type="button" class="band-btn band-btn--primary" id="itemPageAcceptBtn" hidden
+                    data-track="item-page-accept-order" onclick="acceptOrder(view.itemPageOrderId)">
+                    <hexa-icon name="CheckIcon"></hexa-icon>
+                    <span data-i18n="details.acceptOrder">Accept order</span>
+                  </button>
+                  <button type="button" class="band-btn band-btn--primary" id="itemPageReprocessBtn" hidden
+                    data-track="item-page-reprocess-open" onclick="openReprocessModal()">
+                    <hexa-icon name="SyncIcon"></hexa-icon>
+                    <span id="itemPageReprocessBtnLabel">Reprocess</span>
+                  </button>
+                  <button type="button" class="band-btn band-btn--ghost band-btn--danger" id="itemPageRejectBtn" hidden
+                    data-track="item-page-reject-order" onclick="rejectOrder(view.itemPageOrderId)">
+                    <hexa-icon name="CloseIcon"></hexa-icon>
+                    <span data-i18n="details.rejectOrder">Reject order</span>
+                  </button>
+                  <button type="button" class="band-btn band-btn--ghost" id="itemPageNoteBtn" data-track="item-add-note" onclick="openNoteDialog(view.itemPageOrderId)">
+                    <hexa-icon name="EditIcon"></hexa-icon>
+                    <span data-i18n="details.addNote">Add resolution note</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="order-details-body">
+            <div class="order-details-card">
+              <div class="order-details-summary" id="itemPageSummary"></div>
+            </div>
+
+            <div class="order-details-card order-timeline-card" id="itemPageTimeline" hidden>
+              <button type="button" class="order-timeline-toggle" id="itemTimelineToggle"
+                data-track="item-timeline-toggle" onclick="toggleItemTimeline()" aria-expanded="false"
+                aria-controls="itemTimelinePanel">
+                <hexa-icon name="HistoryIcon"></hexa-icon>
+                <span class="order-timeline-toggle-label" data-i18n="details.timeline">Order timeline</span>
+                <span class="order-timeline-count" id="itemTimelineCount"></span>
+                <hexa-icon name="ChevronDownIcon" class="caret"></hexa-icon>
+              </button>
+              <div class="order-timeline-panel" id="itemTimelinePanel" hidden>
+                <ul class="timeline" id="itemTimelineList"></ul>
+              </div>
+            </div>
+
+            <div class="item-summary-cards" id="itemSummaryCards"></div>
+
+            <div id="itemListWrap"></div>
+          </div>
+        </section>
+
+      </div><!-- /.app-shell -->
+    </div><!-- /.bees-one-main-col -->
+  </div><!-- /.bees-one-app -->
+
+  <!-- ORDER DETAIL DRAWER (non-modal side panel) -->
+  <div id="drawerScrim" class="drawer-scrim" hidden onclick="closeDrawer()"></div>
+  <aside id="orderDrawer" class="order-drawer" role="dialog" aria-modal="false" aria-labelledby="drawerTitle" hidden>
+    <header>
+      <div>
+        <div class="text-body-xs text-fg-neutral-tertiary" style="text-transform:uppercase;letter-spacing:.05em" id="drawerEyebrow" data-i18n="drawer.eyebrow">Order detail</div>
+        <h3 id="drawerTitle" style="margin:4px 0 0">—</h3>
+      </div>
+      <button class="hexa-icon-btn" data-track="drawer-close" onclick="closeDrawer()" aria-label="Close">
+        <hexa-icon name="CloseIcon"></hexa-icon>
+      </button>
+    </header>
+    <div class="body" id="drawerBody"></div>
+    <footer id="drawerFooter">
+      <!-- Populated dynamically by populateDrawer() depending on the rule -->
+    </footer>
+  </aside>
+
+  <!-- REPROCESS MODAL (details page) -->
+  <dialog id="reprocessModal" class="hexa-dialog" aria-labelledby="reprocessModalTitle">
+    <div class="hexa-dialog-header">
+      <h3 id="reprocessModalTitle" style="margin:0">Reprocess order</h3>
+      <p class="text-body-sm text-fg-neutral-secondary" id="reprocessModalSubtitle" style="margin:var(--hexa-space-sm) 0 0"></p>
+    </div>
+    <div class="hexa-dialog-body" id="reprocessModalBody"></div>
+    <div class="hexa-dialog-footer" id="reprocessModalFooter"></div>
+  </dialog>
+
+  <!-- UPC FIX MODAL (details page — per line) -->
+  <dialog id="upcFixModal" class="hexa-dialog hexa-dialog--upc" aria-labelledby="upcFixModalTitle">
+    <div class="hexa-dialog-header">
+      <h3 id="upcFixModalTitle" style="margin:0">Choose correct UPC</h3>
+      <p class="text-body-sm text-fg-neutral-secondary" id="upcFixModalSubtitle" style="margin:var(--hexa-space-sm) 0 0"></p>
+    </div>
+    <div class="hexa-dialog-body" id="upcFixModalBody"></div>
+    <div class="hexa-dialog-footer" id="upcFixModalFooter"></div>
+  </dialog>
+
+  <!-- REJECT CONFIRMATION MODAL (line-level only) -->
+  <dialog id="rejectModal" class="hexa-dialog" aria-labelledby="rejectModalTitle">
+    <div class="hexa-dialog-header">
+      <h3 id="rejectModalTitle" style="margin:0">Reject</h3>
+      <p class="text-body-sm text-fg-neutral-secondary" id="rejectModalSubtitle" style="margin:var(--hexa-space-sm) 0 0"></p>
+    </div>
+    <div class="hexa-dialog-footer" id="rejectModalFooter"></div>
+  </dialog>
+
+  <!-- RESOLUTION NOTE + ORDER ACTION MODAL (accept / reject order) -->
+  <dialog id="resolutionActionModal" class="hexa-dialog" aria-labelledby="resolutionActionModalTitle">
+    <div class="hexa-dialog-header">
+      <h3 id="resolutionActionModalTitle" style="margin:0"></h3>
+      <p class="text-body-sm text-fg-neutral-secondary" id="resolutionActionModalSubtitle" style="margin:var(--hexa-space-sm) 0 0"></p>
+    </div>
+    <div class="hexa-dialog-body resolution-action-modal-body">
+      <label class="hexa-field">
+        <span class="hexa-label" data-i18n="drawer.note">Note</span>
+        <textarea class="hexa-textarea" id="resolutionActionNoteInput" maxlength="250" rows="4"
+          data-i18n-placeholder="drawer.notePlaceholder"
+          placeholder="Describe what you did or what the chain should know…"
+          oninput="updateResolutionActionNoteCount(this)"></textarea>
+        <span class="text-body-xs text-fg-neutral-tertiary" aria-live="polite">
+          <span id="resolutionActionNoteCount">0</span>/250 · <span data-i18n="modal.noteRequired">A resolution note is required.</span>
+        </span>
+      </label>
+    </div>
+    <div class="hexa-dialog-footer">
+      <button type="button" class="hexa-btn hexa-btn--tertiary" data-track="resolution-action-cancel" onclick="closeResolutionActionModal()" data-i18n="drawer.cancel">Cancel</button>
+      <button type="button" class="hexa-btn hexa-btn--primary" id="resolutionActionConfirmBtn" data-track="resolution-action-confirm"
+        disabled onclick="confirmResolutionActionModal()"></button>
+    </div>
+  </dialog>
+
+  <script>
+  // ============================================================
+  // STATE — aligned to HLR BEESEDI-51860
+  // ============================================================
+  const D = window.EDI_DATA;
+  const t = (...args) => I18n.t(...args);
+
+  function toggleLangMenu(e) {
+    e.stopPropagation();
+    const menu = document.getElementById('langMenu');
+    const btn = document.getElementById('langToggle');
+    const open = menu.hidden;
+    menu.hidden = !open;
+    btn.setAttribute('aria-expanded', String(open));
+    if (open) HT.track('lang_menu_opened', { lang: I18n.getLang() });
+  }
+
+  function closeLangMenu() {
+    const menu = document.getElementById('langMenu');
+    const btn = document.getElementById('langToggle');
+    if (!menu || menu.hidden) return;
+    menu.hidden = true;
+    btn.setAttribute('aria-expanded', 'false');
+  }
+
+  function setLanguage(lang) {
+    I18n.setLang(lang);
+    closeLangMenu();
+    HT.track('language_changed', { lang });
+  }
+
+  window.onLanguageChanged = function () {
+    renderAllPanels();
+    syncDropdownLabels();
+    renderTable();
+    if (view.openOrderId) {
+      const o = D.orders.find((x) => x.id === view.openOrderId);
+      if (o) populateDrawer(o);
+    }
+    if (view.itemPageOrderId) renderItemPage(view.itemPageOrderId);
+    const modal = document.getElementById('reprocessModal');
+    if (modal && modal.open && view.itemPageOrderId) openReprocessModal();
+    const resolutionModal = document.getElementById('resolutionActionModal');
+    if (resolutionModal && resolutionModal.open && view.resolutionActionPending) {
+      openResolutionActionModal(view.resolutionActionPending.action, view.resolutionActionPending.orderIds);
+    }
+  };
+
+  document.addEventListener('click', (e) => {
+    if (!document.getElementById('langSwitcher')?.contains(e.target)) closeLangMenu();
+  });
+
+  I18n.applyStaticLabels();
+
+  // Filter dimensions aligned to table columns.
+  const FILTER_DIMS = ['statuses', 'rules', 'pocs', 'chains'];
+  const emptyFilterState = () => ({
+    statuses: new Set(),
+    rules: new Set(),
+    pocs: new Set(),
+    chains: new Set(),
+  });
+  const draft   = emptyFilterState();
+  const applied = Object.assign(emptyFilterState(), {
+    poQuery: '',
+    beesQuery: '',
+    expirationFrom: '',
+    expirationTo: '',
+    dateFrom: null,
+    dateTo: null,
+  });
+
+  const view = {
+    openOrderId: null,
+    itemPageOrderId: null,
+    page: 1,
+    pageSize: 10,
+    sortField: 'receivedAt',
+    sortDir: 'desc',
+    sortExplicit: false,
+    selected: new Set(),
+    noteComposerOpen: false,
+    itemTimelineOpen: false,
+    itemTimelineOrderId: null,
+    itemUpcModalLine: null,
+    upcModalPickedSku: '',
+    // For rule-specific drawer actions:
+    drawerSelectedUpcs: {}, // { lineNumber: 'new-upc-string' }
+    drawerPriceChoice: 'bees', // 'bees' | 'requested'
+    drawerRejectedChoice: 'as-is', // 'as-is' | 'bypass'
+    resolutionActionPending: null, // { action, orderIds }
+  };
+
+  // FR-7: order action policy by status + business rule
+  const REPROCESSABLE_STATUSES = new Set(['BLOCKED', 'REJECTED']);
+  const isReprocessable = (o) => REPROCESSABLE_STATUSES.has(o.statusId);
+
+  function orderRuleCode(o) {
+    if (o?.ruleCode) return o.ruleCode;
+    const rule = getActionRule(o);
+    return rule?.code || null;
+  }
+
+  function getOrderActionPolicy(o) {
+    const none = { note: false, reprocess: false, accept: false };
+    const noteOnly = { note: true, reprocess: false, accept: false };
+    if (!o) return none;
+    if (o.statusId === 'ACCEPTED' || o.statusId === 'IN_QUEUE') return noteOnly;
+    if (o.statusId === 'BLOCKED' || o.statusId === 'REJECTED') {
+      return { note: true, reprocess: true, accept: false };
+    }
+    return none;
+  }
+
+  const canAcceptOrder = (o) => getOrderActionPolicy(o).accept;
+  function startOfLocalDay(d) {
+    return new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  }
+  function isReprocessAllowedByDeliveryDate(o) {
+    if (!o?.requestedDeliveryDate) return true;
+    const today = startOfLocalDay(new Date());
+    const delivery = startOfLocalDay(new Date(o.requestedDeliveryDate));
+    return today.getTime() <= delivery.getTime();
+  }
+  function isReprocessEligible(o) {
+    return getOrderActionPolicy(o).reprocess && !!o.ruleCode;
+  }
+  const canReprocessOrder = (o) => isReprocessEligible(o) && isReprocessAllowedByDeliveryDate(o);
+  function reprocessBlockedTitle(o) {
+    return t('action.reprocessAfterDeliveryBlocked', { date: fmtDateOnly(o.requestedDeliveryDate) });
+  }
+  const canAddNote = (o) => getOrderActionPolicy(o).note;
+
+  function setBandBtnVisible(btn, visible) {
+    if (!btn) return;
+    btn.hidden = !visible;
+    if (visible) btn.removeAttribute('hidden');
+    else btn.setAttribute('hidden', '');
+  }
+
+  function lineCounts(o) {
+    const c = { OK: 0, ALERT: 0, REJECTED: 0, PENDING: 0 };
+    (o.items || []).forEach((it) => { c[it.status] = (c[it.status] || 0) + 1; });
+    return c;
+  }
+
+  function getActionRule(o) {
+    if (!o?.ruleCode) return null;
+    if (D.RULE_BY_CODE[o.ruleCode]) return D.RULE_BY_CODE[o.ruleCode];
+    if (o.ruleCode === 'PRODUCT_ISSUES' || o.ruleCode === 'NO_ACCEPTED_LINES') {
+      const first = o.items.find((it) => (it.status === 'ALERT' || it.status === 'REJECTED') && it.ruleCode);
+      if (first && D.RULE_BY_CODE[first.ruleCode]) return D.RULE_BY_CODE[first.ruleCode];
+      return { code: o.ruleCode, action: 'reprocess-no-fix' };
+    }
+    return null;
+  }
+
+  function ensureBeesOrderNumber(o) {
+    if (o.beesOrderNumber) return;
+    const hasReleased = (o.items || []).some((it) => it.status === 'OK');
+    if (o.statusId === 'ACCEPTED' || (o.statusId === 'BLOCKED' && hasReleased)) {
+      o.beesOrderNumber = 'BEES-' + (1000000000 + Math.floor(Math.random() * 8999999999)).toString();
+    }
+  }
+
+  function recalcOrderRule(o) {
+    const meta = D.deriveOrderMetaFromLines(o.items);
+    o.ruleCode = meta.ruleCode;
+    o.ruleLabel = meta.ruleCode ? I18n.ruleLabel(meta.ruleCode) : null;
+  }
+
+  function recalcOrderStatus(o) {
+    if (o.statusId === 'IN_QUEUE' && o.items.every((it) => it.status === 'PENDING')) {
+      return;
+    }
+
+    const meta = D.deriveOrderMetaFromLines(o.items);
+    const status = D.STATUSES.find((s) => s.id === meta.statusId);
+    o.statusId = meta.statusId;
+    o.statusTone = status?.tone || 'info';
+    o.statusLabel = I18n.statusLabel(meta.statusId);
+    o.ruleCode = meta.ruleCode;
+    o.ruleLabel = meta.ruleCode ? I18n.ruleLabel(meta.ruleCode) : null;
+
+    if (meta.statusId === 'ACCEPTED' || meta.statusId === 'BLOCKED') {
+      ensureBeesOrderNumber(o);
+    }
+  }
+
+  function appendAudit(o, event, actor = 'ops') {
+    o.audit = o.audit || [];
+    o.audit.push({ ts: new Date().toISOString(), event, actor });
+  }
+
+  function refreshOrderViews(orderId) {
+    renderTable();
+    const row = document.querySelector(`.order-row[data-id="${orderId}"]`);
+    if (row) row.classList.add('flash');
+    if (view.openOrderId === orderId) {
+      const o = D.orders.find((x) => x.id === orderId);
+      if (o) populateDrawer(o);
+    }
+    if (view.itemPageOrderId === orderId) renderItemPage(orderId);
+  }
+
+  view.rejectPending = null;
+
+  function resolutionActionNoteCategory(action, orderId) {
+    if (action === 'accept-order' || action === 'accept-order-bulk') {
+      const o = D.orders.find((x) => x.id === orderId);
+      const code = orderRuleCode(o);
+      if (code === 'MIN_ORDER_QUANTITY' || code === 'MAX_ORDER_QUANTITY') return 'other';
+    }
+    return 'other';
+  }
+
+  function openResolutionActionModal(action, orderIdOrIds) {
+    const orderIds = Array.isArray(orderIdOrIds) ? orderIdOrIds : [orderIdOrIds];
+    view.resolutionActionPending = { action, orderIds };
+    const modal = document.getElementById('resolutionActionModal');
+    const isBulkAccept = action === 'accept-order-bulk';
+    const isAccept = action === 'accept-order' || isBulkAccept;
+    const isAddNote = action === 'add-note';
+    document.getElementById('resolutionActionModalTitle').textContent = isAddNote
+      ? t('modal.addNoteTitle')
+      : (isBulkAccept
+        ? t('modal.acceptOrdersTitle', { count: orderIds.length })
+        : (isAccept ? t('modal.acceptOrderTitle') : t('modal.rejectOrderTitle')));
+    document.getElementById('resolutionActionModalSubtitle').textContent = isAddNote
+      ? t('modal.addNoteBody')
+      : (isBulkAccept
+        ? t('modal.acceptOrdersNoteBody', { count: orderIds.length })
+        : (isAccept ? t('modal.acceptOrderNoteBody') : t('modal.rejectOrderNoteBody')));
+    const input = document.getElementById('resolutionActionNoteInput');
+    input.value = '';
+    updateResolutionActionNoteCount(input);
+    const confirmBtn = document.getElementById('resolutionActionConfirmBtn');
+    confirmBtn.className = (isAccept || isAddNote) ? 'hexa-btn hexa-btn--primary' : 'hexa-btn hexa-btn--destructive';
+    confirmBtn.textContent = isAddNote
+      ? t('modal.confirmSaveNote')
+      : (isAccept ? t('modal.confirmAccept') : t('modal.confirmReject'));
+    confirmBtn.setAttribute('data-track', isAddNote ? 'resolution-action-save-note' : (isAccept ? 'resolution-action-accept' : 'resolution-action-reject'));
+    if (typeof modal.showModal === 'function') modal.showModal();
+    else modal.setAttribute('open', '');
+    HT.track('resolution_action_modal_opened', { action, count: orderIds.length });
+    requestAnimationFrame(() => input.focus());
+  }
+
+  function updateResolutionActionNoteCount(el) {
+    const counter = document.getElementById('resolutionActionNoteCount');
+    if (counter) counter.textContent = String((el?.value || '').length);
+    const confirmBtn = document.getElementById('resolutionActionConfirmBtn');
+    if (confirmBtn) confirmBtn.disabled = !(el?.value || '').trim();
+  }
+
+  function closeResolutionActionModal() {
+    view.resolutionActionPending = null;
+    const modal = document.getElementById('resolutionActionModal');
+    if (modal.open) modal.close();
+    else modal.removeAttribute('open');
+  }
+
+  function confirmResolutionActionModal() {
+    const pending = view.resolutionActionPending;
+    if (!pending) return;
+    const category = resolutionActionNoteCategory(pending.action, pending.orderIds[0]);
+    const body = document.getElementById('resolutionActionNoteInput')?.value.trim();
+    if (!body) {
+      document.getElementById('resolutionActionNoteInput')?.focus();
+      return;
+    }
+    for (const orderId of pending.orderIds) {
+      if (!addResolutionNote(orderId, category, body)) return;
+    }
+    if (pending.action === 'add-note') {
+      closeResolutionActionModal();
+      refreshOrderViews(pending.orderIds[0]);
+      return;
+    }
+    if (pending.action === 'accept-order' || pending.action === 'accept-order-bulk') {
+      pending.orderIds.forEach((orderId) => executeAcceptOrder(orderId));
+      if (pending.action === 'accept-order-bulk') {
+        view.selected.clear();
+        renderTable();
+      }
+    } else if (pending.action === 'reject-order') {
+      executeRejectOrder(pending.orderIds[0]);
+    }
+    closeResolutionActionModal();
+  }
+
+  function openRejectModal(kind, orderId, lineNumber) {
+    view.rejectPending = { kind, orderId, lineNumber: lineNumber || null };
+    const modal = document.getElementById('rejectModal');
+    const isLine = kind === 'line';
+    document.getElementById('rejectModalTitle').textContent = isLine ? t('modal.rejectLineTitle') : t('modal.rejectOrderTitle');
+    document.getElementById('rejectModalSubtitle').textContent = isLine ? t('modal.rejectLineBody') : t('modal.rejectOrderBody');
+    document.getElementById('rejectModalFooter').innerHTML = `
+      <button type="button" class="hexa-btn hexa-btn--tertiary" data-track="reject-modal-cancel" onclick="closeRejectModal()">${t('drawer.cancel')}</button>
+      <button type="button" class="hexa-btn hexa-btn--destructive" data-track="reject-modal-confirm" onclick="confirmRejectModal()">${t('modal.confirmReject')}</button>
+    `;
+    if (typeof modal.showModal === 'function') modal.showModal();
+    else modal.setAttribute('open', '');
+    HT.track('reject_modal_opened', { kind, line: lineNumber || null });
+  }
+
+  function closeRejectModal() {
+    view.rejectPending = null;
+    const modal = document.getElementById('rejectModal');
+    if (modal.open) modal.close();
+    else modal.removeAttribute('open');
+  }
+
+  function confirmRejectModal() {
+    const pending = view.rejectPending;
+    if (!pending) return;
+    if (pending.kind === 'line') rejectLine(pending.orderId, pending.lineNumber, true);
+    closeRejectModal();
+  }
+
+  function rejectLine(orderId, lineNumber, skipModal) {
+    if (!skipModal) {
+      openRejectModal('line', orderId, lineNumber);
+      return;
+    }
+    const o = D.orders.find((x) => x.id === orderId);
+    const it = o?.items.find((x) => x.lineNumber === lineNumber);
+    if (!o || !it) return;
+    it.status = 'REJECTED';
+    appendAudit(o, t('audit.lineRejected', { n: String(lineNumber).padStart(2, '0') }));
+    recalcOrderStatus(o);
+    HT.track('line_rejected', { line: lineNumber });
+    refreshOrderViews(orderId);
+  }
+
+  function acceptOrder(orderId) {
+    const o = D.orders.find((x) => x.id === orderId);
+    if (!o || !canAcceptOrder(o)) return;
+    openResolutionActionModal('accept-order', orderId);
+  }
+
+  function executeAcceptOrder(orderId) {
+    const o = D.orders.find((x) => x.id === orderId);
+    if (!o || !canAcceptOrder(o)) return;
+    o.items.forEach((it) => {
+      it.status = 'OK';
+      it.ruleCode = null;
+    });
+    o.statusId = 'ACCEPTED';
+    o.statusLabel = I18n.statusLabel('ACCEPTED');
+    o.statusTone = 'success';
+    o.ruleCode = null;
+    o.ruleLabel = null;
+    ensureBeesOrderNumber(o);
+    appendAudit(o, t('audit.orderAcceptedOps'));
+    recalcOrderStatus(o);
+    HT.track('order_accepted', { rule: orderRuleCode(o) || 'unknown' });
+    refreshOrderViews(orderId);
+  }
+
+  function rejectOrder(orderId, skipModal) {
+    // Order-level reject is not offered in the current action matrix.
+    return;
+  }
+
+  function executeRejectOrder(orderId) {
+    const o = D.orders.find((x) => x.id === orderId);
+    if (!o) return;
+    o.items.forEach((it) => {
+      if (it.status === 'ALERT' || it.status === 'PENDING') it.status = 'REJECTED';
+    });
+    appendAudit(o, t('audit.orderRejected'));
+    recalcOrderStatus(o);
+    HT.track('order_rejected', {});
+    refreshOrderViews(orderId);
+  }
+
+  const DEFAULT_SORT_FIELD = 'receivedAt';
+  const DEFAULT_SORT_DIR = 'desc';
+
+  function sortHeaderState(field) {
+    if (!view.sortExplicit) {
+      return field === DEFAULT_SORT_FIELD ? 'default' : 'none';
+    }
+    if (view.sortField !== field) return 'none';
+    return view.sortDir;
+  }
+
+  function sortHeaderAria(field) {
+    const state = sortHeaderState(field);
+    const col = field === 'receivedAt' ? t('sort.columnReceive') : t('sort.columnExpiration');
+    if (state === 'asc') return `${col}. ${t('sort.ascLabel')}`;
+    if (state === 'desc') return `${col}. ${t('sort.descLabel')}`;
+    if (state === 'default') return `${col}. ${t('sort.defaultLabel')}`;
+    return `${col}. ${t('sort.clickToSort')}`;
+  }
+
+  function sortHeaderIcon(state) {
+    if (state === 'asc') return '<hexa-icon name="ArrowUpIcon" class="col-sort__icon"></hexa-icon>';
+    if (state === 'desc') return '<hexa-icon name="ArrowDownIcon" class="col-sort__icon"></hexa-icon>';
+    return '<hexa-icon name="SortDefaultIcon" class="col-sort__icon col-sort__icon--muted"></hexa-icon>';
+  }
+
+  function sortableHeaderCell(field, labelKey) {
+    const state = sortHeaderState(field);
+    const active = state !== 'none';
+    return `
+      <button type="button"
+        class="col-sort${active ? ' is-active' : ''}${state === 'default' ? ' is-default' : ''}"
+        data-track="orders-sort-${field}"
+        aria-label="${escapeHtml(sortHeaderAria(field))}"
+        onclick="event.stopPropagation(); toggleColumnSort('${field}')">
+        <span class="col-sort__label">${escapeHtml(t(labelKey))}</span>
+        ${sortHeaderIcon(state)}
+      </button>`;
+  }
+
+  function toggleColumnSort(field) {
+    if (!view.sortExplicit) {
+      view.sortExplicit = true;
+      view.sortField = field;
+      view.sortDir = 'asc';
+    } else if (view.sortField !== field) {
+      view.sortField = field;
+      view.sortDir = 'asc';
+    } else if (view.sortDir === 'asc') {
+      view.sortDir = 'desc';
+    } else {
+      view.sortExplicit = false;
+      view.sortField = DEFAULT_SORT_FIELD;
+      view.sortDir = DEFAULT_SORT_DIR;
+    }
+    view.page = 1;
+    HT.track('orders_sort_changed', {
+      field: view.sortField,
+      dir: view.sortDir,
+      explicit: view.sortExplicit,
+    });
+    renderTable();
+  }
+
+  // BEES catalog lookup for UPC_NOT_FOUND resolution.
+  function catalogProduct(sku) {
+    return D.CATALOG.find((c) => c.sku === sku) || null;
+  }
+
+  function searchCatalog(query, excludeSku, limit = 30) {
+    const q = (query || '').trim().toLowerCase();
+    if (q.length < 2) return [];
+    return D.CATALOG.filter((c) => {
+      if (c.sku === excludeSku) return false;
+      return c.sku.includes(q)
+        || c.name.toLowerCase().includes(q)
+        || c.family.toLowerCase().includes(q);
+    }).slice(0, limit);
+  }
+
+  // Legacy helper — drawer still surfaces a short list; modal uses full search.
+  function alternativeUpcs(lineSku) {
+    return D.CATALOG.filter((c) => c.sku !== lineSku).slice(0, 4).map((c) => ({ sku: c.sku, name: c.name }));
+  }
+
+  function fmtMoney(n) { return '$' + n.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
+  function fmtDate(iso) {
+    const d = new Date(iso);
+    const loc = I18n.locale();
+    return d.toLocaleDateString(loc, { day: '2-digit', month: 'short', year: 'numeric' }) + ' ' + d.toLocaleTimeString(loc, { hour: '2-digit', minute: '2-digit' });
+  }
+  function fmtDateOnly(iso) {
+    const d = new Date(iso);
+    return d.toLocaleDateString(I18n.locale(), { day: '2-digit', month: 'short', year: 'numeric' });
+  }
+  function isoDay(d) { return d.toISOString().slice(0, 10); }
+  function escapeHtml(s) { return String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+
+  function emptyDash() {
+    return '<span class="text-fg-neutral-tertiary">—</span>';
+  }
+
+  function beesOrderNumberHtml(o, source) {
+    if (!o.beesOrderNumber) {
+      return emptyDash();
+    }
+    return `<a href="#" class="bees-order-link mono" data-track="bees-order-link-${source}"
+      onclick="event.preventDefault(); event.stopPropagation()"
+      title="${escapeHtml(t('drawer.beesHistory'))}">${escapeHtml(o.beesOrderNumber)}</a>`;
+  }
+
+  function isPoDuplicatedOrder(o) {
+    return o?.ruleCode === 'PO_DUPLICATED';
+  }
+
+  function duplicateBeesOrderHtml(o, source) {
+    if (!isPoDuplicatedOrder(o) || !o.duplicateBeesOrderNumber) return emptyDash();
+    if (o.duplicateBeesOrderId) {
+      return `<a href="#order/${o.duplicateBeesOrderId}" class="bees-order-link mono" data-track="duplicate-bees-order-link-${source}"
+        onclick="event.stopPropagation()">${escapeHtml(o.duplicateBeesOrderNumber)}</a>`;
+    }
+    return `<span class="mono">${escapeHtml(o.duplicateBeesOrderNumber)}</span>`;
+  }
+
+  function renderPoDuplicatedBeesField(o, source) {
+    if (!isPoDuplicatedOrder(o)) return '';
+    return `<div><dt>${t('details.duplicateBeesOrder')}</dt><dd>${duplicateBeesOrderHtml(o, source)}</dd></div>`;
+  }
+
+  // ============================================================
+  // INIT — period defaults: last 30 days (default), max 90 days (HLR FR-2)
+  // ============================================================
+  (function initPeriod() {
+    const today = new Date();
+    const from = new Date(today.getTime() - 29 * 86400000);
+    document.getElementById('dateTo').value = isoDay(today);
+    document.getElementById('dateFrom').value = isoDay(from);
+    document.getElementById('dateTo').max = isoDay(today);
+    document.getElementById('dateFrom').max = isoDay(today);
+    applied.dateFrom = isoDay(from);
+    applied.dateTo = isoDay(today);
+    document.getElementById('periodHint').textContent = t('filter.periodHint');
+  })();
+
+  // ----------------------------------------------------------------
+  // Filter dropdown panels — one renderer per dimension.
+  // ----------------------------------------------------------------
+  function optionRow(value, label, checked, onChange, suffix) {
+    return `<label class="opt">
+      <input type="checkbox" value="${value}" ${checked ? 'checked' : ''} onchange="${onChange}" />
+      <span style="flex:1">${label}</span>
+      ${suffix || ''}
+    </label>`;
+  }
+  function renderStatusPanel() {
+    document.getElementById('statusPanel').innerHTML = D.STATUSES.map((s) => `
+      <label class="opt"><input type="checkbox" value="${s.id}" ${draft.statuses.has(s.id) ? 'checked' : ''} onchange="toggleDraft('statuses', this.value, this.checked)"/>
+        <span class="hexa-status-badge hexa-status-badge--${s.tone}">${I18n.statusLabel(s.id)}</span>
+      </label>
+    `).join('');
+  }
+  function renderRulePanel() {
+    const sorted = D.FILTER_RULE_CODES
+      .map((code) => ({ code, label: I18n.ruleLabel(code) }))
+      .sort((a, b) => a.label.localeCompare(b.label, I18n.locale()));
+    document.getElementById('rulePanel').innerHTML = sorted
+      .map(({ code, label }) => optionRow(code, escapeHtml(label), draft.rules.has(code), `toggleDraft('rules','${code}', this.checked)`))
+      .join('');
+  }
+  function renderPocPanel(query) {
+    const q = (query || '').toLowerCase();
+    const list = D.POCS.filter((p) => !q || p.name.toLowerCase().includes(q) || p.id.toLowerCase().includes(q) || p.city.toLowerCase().includes(q));
+    document.getElementById('pocPanel').innerHTML = `
+      <div class="search">
+        <span class="hexa-input-wrap">
+          <hexa-icon name="SearchIcon"></hexa-icon>
+          <input class="hexa-input" placeholder="${escapeHtml(t('filter.pocSearch'))}" oninput="renderPocPanel(this.value)" value="${escapeHtml(query || '')}" />
+        </span>
+      </div>
+      ${list.map((p) => `
+        <label class="opt">
+          <input type="checkbox" value="${p.id}" ${draft.pocs.has(p.id) ? 'checked' : ''} onchange="toggleDraft('pocs','${p.id}', this.checked)"/>
+          <span style="flex:1">${escapeHtml(p.name)}</span>
+          <span class="text-body-xs text-fg-neutral-tertiary">${p.id} · ${escapeHtml(p.city)}</span>
+        </label>
+      `).join('') || `<div class="text-body-sm text-fg-neutral-tertiary p-sm">${t('filter.pocNoMatch')}</div>`}
+    `;
+  }
+  function renderRetailerPanel() {
+    document.getElementById('retailerPanel').innerHTML = D.CHAINS.map((c) =>
+      optionRow(c.code, escapeHtml(c.name), draft.chains.has(c.code), `toggleDraft('chains','${c.code}', this.checked)`)
+    ).join('');
+  }
+  function renderVendorPanel() { /* removed */ }
+  function renderRegionPanel() { /* removed */ }
+  function renderRepPanel() { /* removed */ }
+  function renderAllPanels() {
+    renderStatusPanel(); renderRulePanel(); renderPocPanel(''); renderRetailerPanel();
+  }
+  renderAllPanels();
+
+  function toggleDraft(key, value, on) {
+    if (on) draft[key].add(value); else draft[key].delete(value);
+    syncDropdownLabels();
+    markDirty();
+    HT.track('filter_drafted', { filter: key, on });
+  }
+
+  function setsEqual(a, b) {
+    if (a.size !== b.size) return false;
+    for (const x of a) if (!b.has(x)) return false;
+    return true;
+  }
+  function isDirty() {
+    if (FILTER_DIMS.some((d) => !setsEqual(draft[d], applied[d]))) return true;
+    const draftScalars = scalarFilterValues('draft');
+    const appliedScalars = scalarFilterValues('applied');
+    return Object.keys(draftScalars).some((k) => draftScalars[k] !== appliedScalars[k]);
+  }
+  function scalarFilterValues(target) {
+    const src = target === 'draft' ? {
+      poQuery: document.getElementById('poInput').value.trim(),
+      beesQuery: document.getElementById('beesInput').value.trim(),
+      expirationFrom: document.getElementById('expirationFrom').value,
+      expirationTo: document.getElementById('expirationTo').value,
+    } : {
+      poQuery: applied.poQuery,
+      beesQuery: applied.beesQuery,
+      expirationFrom: applied.expirationFrom,
+      expirationTo: applied.expirationTo,
+    };
+    return src;
+  }
+  function syncScalarInputsFromApplied() {
+    document.getElementById('poInput').value = applied.poQuery;
+    document.getElementById('beesInput').value = applied.beesQuery;
+    document.getElementById('expirationFrom').value = applied.expirationFrom;
+    document.getElementById('expirationTo').value = applied.expirationTo;
+  }
+  function markDirty() {
+    document.getElementById('applyBtn').classList.toggle('is-dirty', isDirty());
+  }
+
+  function syncDropdownLabels() {
+    const set = (id, count, singKey, plurKey, allKey) => {
+      const el = document.getElementById(id);
+      el.className = count ? '' : 'placeholder';
+      if (!count) el.textContent = t(allKey);
+      else el.textContent = t(count > 1 ? plurKey : singKey, { count });
+    };
+    set('statusLabel',  draft.statuses.size,  'filter.statusCount',  'filter.statusesCount',  'filter.allStatuses');
+    set('ruleLabel',    draft.rules.size,     'filter.ruleCount',    'filter.rulesCount',    'filter.allRules');
+    set('pocLabel',     draft.pocs.size,      'filter.pocCount',     'filter.pocsCount',     'filter.allPocs');
+    set('retailerLabel', draft.chains.size,   'filter.retailerCount','filter.retailersCount','filter.allRetailers');
+  }
+  syncDropdownLabels();
+
+  document.addEventListener('click', (e) => {
+    document.querySelectorAll('.dropdown.is-open').forEach((dd) => {
+      if (!dd.contains(e.target)) dd.classList.remove('is-open');
+    });
+    const filterBlock = document.getElementById('filterBlock');
+    const filterForm = document.getElementById('filterForm');
+    const filterToggle = document.getElementById('filterToggle');
+    if (filterForm && !filterForm.hidden && filterBlock && !filterBlock.contains(e.target)) {
+      filterForm.hidden = true;
+      filterToggle.setAttribute('aria-expanded', 'false');
+      HT.track('filter_panel_toggled', { open: false, reason: 'click_outside' });
+    }
+  });
+  function toggleDropdown(id) {
+    const dd = document.getElementById(id);
+    const isOpen = dd.classList.contains('is-open');
+    document.querySelectorAll('.dropdown.is-open').forEach((d) => d.classList.remove('is-open'));
+    if (!isOpen) {
+      dd.classList.add('is-open');
+      positionDropdownPanel(dd);
+    }
+    event.stopPropagation();
+  }
+  function positionDropdownPanel(dd) {
+    const trigger = dd.querySelector('.dropdown-trigger');
+    const panel = dd.querySelector('.dropdown-panel');
+    if (!trigger || !panel) return;
+    const r = trigger.getBoundingClientRect();
+    const panelWidth = Math.max(r.width, 240);
+    panel.style.minWidth = panelWidth + 'px';
+    panel.style.top = (r.bottom + 4) + 'px';
+    const wouldOverflow = (r.left + panelWidth) > (window.innerWidth - 16);
+    panel.style.left = wouldOverflow ? (r.right - panelWidth) + 'px' : r.left + 'px';
+  }
+  ['scroll', 'resize'].forEach(ev => window.addEventListener(ev, () => {
+    document.querySelectorAll('.dropdown.is-open').forEach(positionDropdownPanel);
+  }, true));
+
+  function enforcePeriodCap() {
+    const fromEl = document.getElementById('dateFrom');
+    const toEl = document.getElementById('dateTo');
+    if (!fromEl.value || !toEl.value) return;
+    const from = new Date(fromEl.value);
+    const to = new Date(toEl.value);
+    const diffDays = Math.round((to - from) / 86400000);
+    if (diffDays < 0) { toEl.value = fromEl.value; }
+    if (diffDays > 90) {
+      const capped = new Date(from.getTime() + 90 * 86400000);
+      toEl.value = isoDay(capped);
+      flashHint(t('filter.periodCapped'));
+    }
+    applied.dateFrom = fromEl.value;
+    applied.dateTo = toEl.value;
+    HT.track('period_set', { days: Math.round((new Date(applied.dateTo) - new Date(applied.dateFrom)) / 86400000) + 1 });
+  }
+  function flashHint(msg) {
+    const el = document.getElementById('periodHint');
+    const original = t('filter.periodHint');
+    el.dataset.flash = '1';
+    el.textContent = msg;
+    el.style.color = 'var(--hexa-status-warning)';
+    setTimeout(() => {
+      delete el.dataset.flash;
+      el.textContent = original;
+      el.style.color = '';
+    }, 2400);
+  }
+  document.getElementById('dateFrom').addEventListener('change', () => { enforcePeriodCap(); view.page = 1; renderTable(); });
+  document.getElementById('dateTo').addEventListener('change', () => { enforcePeriodCap(); view.page = 1; renderTable(); });
+
+  document.getElementById('poInput').addEventListener('input', () => { markDirty(); });
+  document.getElementById('beesInput').addEventListener('input', () => { markDirty(); });
+  document.getElementById('expirationFrom').addEventListener('change', () => { markDirty(); });
+  document.getElementById('expirationTo').addEventListener('change', () => { markDirty(); });
+
+  function applyScalarFilters() {
+    applied.poQuery = document.getElementById('poInput').value.trim();
+    applied.beesQuery = document.getElementById('beesInput').value.trim();
+    applied.expirationFrom = document.getElementById('expirationFrom').value;
+    applied.expirationTo = document.getElementById('expirationTo').value;
+  }
+
+  function applyFilters() {
+    FILTER_DIMS.forEach((d) => { applied[d] = new Set(draft[d]); });
+    applyScalarFilters();
+    view.page = 1;
+    markDirty();
+    const dims = FILTER_DIMS.filter((d) => applied[d].size);
+    HT.track('filters_applied_explicit', {
+      filter_dimensions: dims,
+      filter_count: dims.length,
+      has_po: !!applied.poQuery,
+      has_bees: !!applied.beesQuery,
+      has_expiration: !!(applied.expirationFrom || applied.expirationTo),
+      days: Math.round((new Date(applied.dateTo) - new Date(applied.dateFrom)) / 86400000) + 1,
+    });
+    renderTable();
+  }
+
+  function clearFilters() {
+    FILTER_DIMS.forEach((d) => { draft[d].clear(); applied[d].clear(); });
+    applied.poQuery = '';
+    applied.beesQuery = '';
+    applied.expirationFrom = '';
+    applied.expirationTo = '';
+    syncScalarInputsFromApplied();
+    const today = new Date();
+    document.getElementById('dateTo').value = isoDay(today);
+    document.getElementById('dateFrom').value = isoDay(new Date(today.getTime() - 29 * 86400000));
+    applied.dateFrom = document.getElementById('dateFrom').value;
+    applied.dateTo = document.getElementById('dateTo').value;
+    renderAllPanels();
+    syncDropdownLabels();
+    markDirty();
+    view.page = 1;
+    renderTable();
+    HT.track('filters_cleared', { cleared_from: 'button' });
+  }
+
+  // ============================================================
+  // FILTERED ORDERS — applies every active filter dimension
+  // ============================================================
+  function filteredOrders(opts = {}) {
+    const fromTs = applied.dateFrom ? new Date(applied.dateFrom).getTime() : 0;
+    const toTs = applied.dateTo ? new Date(applied.dateTo).getTime() + 86400000 - 1 : Infinity;
+    const expFromTs = applied.expirationFrom ? new Date(applied.expirationFrom).getTime() : 0;
+    const expToTs = applied.expirationTo ? new Date(applied.expirationTo).getTime() + 86400000 - 1 : Infinity;
+    const list = D.orders.filter((o) => {
+      if (!opts.ignoreStatus && applied.statuses.size && !applied.statuses.has(o.statusId)) return false;
+      if (applied.rules.size && (!o.ruleCode || !applied.rules.has(o.ruleCode))) return false;
+      if (applied.pocs.size && !applied.pocs.has(o.pocId)) return false;
+      if (applied.chains.size && !applied.chains.has(o.chainCode)) return false;
+      if (applied.poQuery && !o.poNumber.includes(applied.poQuery)) return false;
+      if (applied.beesQuery) {
+        if (!o.beesOrderNumber || !o.beesOrderNumber.toLowerCase().includes(applied.beesQuery.toLowerCase())) return false;
+      }
+      const t = new Date(o.receivedAt).getTime();
+      if (t < fromTs || t > toTs) return false;
+      if (applied.expirationFrom || applied.expirationTo) {
+        const expTs = new Date(o.expirationDate).getTime();
+        if (applied.expirationFrom && expTs < expFromTs) return false;
+        if (applied.expirationTo && expTs > expToTs) return false;
+      }
+      return true;
+    });
+    const field = view.sortExplicit ? view.sortField : DEFAULT_SORT_FIELD;
+    const dir = (view.sortExplicit ? view.sortDir : DEFAULT_SORT_DIR) === 'asc' ? 1 : -1;
+    return list.sort((a, b) => {
+      const av = a[field] || '';
+      const bv = b[field] || '';
+      return av < bv ? -dir : av > bv ? dir : 0;
+    });
+  }
+
+  function removeAppliedFilter(key, value) {
+    applied[key].delete(value);
+    draft[key].delete(value);
+    view.page = 1;
+    syncDropdownLabels();
+    markDirty();
+    renderAllPanels();
+    renderTable();
+    HT.track('filter_chip_removed', { filter: key });
+  }
+  function clearPoQuery() {
+    document.getElementById('poInput').value = '';
+    applied.poQuery = '';
+    view.page = 1;
+    markDirty();
+    renderTable();
+    HT.track('filter_chip_removed', { filter: 'po_number' });
+  }
+  function clearBeesQuery() {
+    document.getElementById('beesInput').value = '';
+    applied.beesQuery = '';
+    view.page = 1;
+    markDirty();
+    renderTable();
+    HT.track('filter_chip_removed', { filter: 'bees_order_number' });
+  }
+  function clearExpirationFilter() {
+    document.getElementById('expirationFrom').value = '';
+    document.getElementById('expirationTo').value = '';
+    applied.expirationFrom = '';
+    applied.expirationTo = '';
+    view.page = 1;
+    markDirty();
+    renderTable();
+    HT.track('filter_chip_removed', { filter: 'expiration_date' });
+  }
+
+  function chipFor(dim, value, label) {
+    return `<button class="hexa-chip" data-track="chip-remove-${dim}" onclick="removeAppliedFilter('${dim}','${escapeHtml(value)}')"><hexa-icon name="CloseIcon"></hexa-icon> ${escapeHtml(label)}</button>`;
+  }
+  function renderActiveFilterChips() {
+    const root = document.getElementById('activeFilters');
+    const chips = [];
+    applied.statuses.forEach((s) => {
+      const st = D.STATUSES.find((x) => x.id === s);
+      if (st) chips.push(chipFor('statuses', s, I18n.statusLabel(s)));
+    });
+    applied.rules.forEach((r) => {
+      const rule = D.RULE_BY_CODE[r];
+      if (rule) chips.push(chipFor('rules', r, I18n.ruleLabel(r)));
+    });
+    if (applied.pocs.size) {
+      chips.push(`<span class="hexa-chip" style="cursor:default">${applied.pocs.size} POC${applied.pocs.size > 1 ? 's' : ''} selected</span>`);
+    }
+    applied.chains.forEach((c) => {
+      const ch = D.CHAINS.find((x) => x.code === c);
+      if (ch) chips.push(chipFor('chains', c, ch.name));
+    });
+    if (applied.poQuery) {
+      chips.push(`<button class="hexa-chip" data-track="chip-remove-po" onclick="clearPoQuery()"><hexa-icon name="CloseIcon"></hexa-icon> PO: ${escapeHtml(applied.poQuery)}</button>`);
+    }
+    if (applied.beesQuery) {
+      chips.push(`<button class="hexa-chip" data-track="chip-remove-bees" onclick="clearBeesQuery()"><hexa-icon name="CloseIcon"></hexa-icon> BEES: ${escapeHtml(applied.beesQuery)}</button>`);
+    }
+    if (applied.expirationFrom || applied.expirationTo) {
+      const label = applied.expirationFrom && applied.expirationTo
+        ? `Expiration: ${applied.expirationFrom} – ${applied.expirationTo}`
+        : applied.expirationFrom
+          ? `Expiration from ${applied.expirationFrom}`
+          : `Expiration until ${applied.expirationTo}`;
+      chips.push(`<button class="hexa-chip" data-track="chip-remove-expiration" onclick="clearExpirationFilter()"><hexa-icon name="CloseIcon"></hexa-icon> ${escapeHtml(label)}</button>`);
+    }
+    document.getElementById('resultBar').hidden = chips.length === 0;
+    root.innerHTML = chips.join('');
+  }
+
+  // ============================================================
+  // Filter-by-rule shortcut — used from drawer / item page badges.
+  // ============================================================
+  function filterByRule(ruleCode, source) {
+    applied.rules = new Set([ruleCode]);
+    draft.rules = new Set([ruleCode]);
+    // Also clamp status to the matching one for clearer triage.
+    const rule = D.RULE_BY_CODE[ruleCode];
+    if (rule) {
+      applied.statuses = new Set([rule.status]);
+      draft.statuses = new Set([rule.status]);
+    }
+    view.page = 1;
+    renderAllPanels();
+    syncDropdownLabels();
+    markDirty();
+    HT.track('filter_from_rule_badge', { rule_category: ruleCode, from_view: source || 'unknown' });
+    closeDrawer();
+    location.hash = '#orders';
+  }
+
+  // ============================================================
+  // FILTER TOGGLE
+  // ============================================================
+  function toggleFilterPanel() {
+    const form = document.getElementById('filterForm');
+    const btn = document.getElementById('filterToggle');
+    const open = form.hidden;
+    form.hidden = !open;
+    btn.setAttribute('aria-expanded', String(open));
+    HT.track('filter_panel_toggled', { open });
+  }
+
+  function statusPill(o) {
+    const map = { success: 'is-success', warning: 'is-warning', error: 'is-error', info: 'is-info', blocked: 'is-blocked' };
+    return `<span class="status-pill ${map[o.statusTone] || 'is-neutral'}">${I18n.statusLabel(o.statusId)}</span>`;
+  }
+  function ruleBadge(ruleCode, source, interactive = true) {
+    if (!ruleCode) return emptyDash();
+    if (ruleCode === 'PRODUCT_ISSUES' || ruleCode === 'NO_ACCEPTED_LINES') {
+      const label = escapeHtml(I18n.ruleLabel(ruleCode));
+      const cls = `rule-badge rule-badge--${ruleCode === 'NO_ACCEPTED_LINES' ? 'error' : 'warning'}`;
+      if (!interactive) return `<span class="${cls}">${label}</span>`;
+      return `<button class="${cls}" data-track="rule-badge-click" onclick="event.stopPropagation();" title="${escapeHtml(t('table.ruleFilterTitle'))}" disabled>${label}</button>`;
+    }
+    const r = D.RULE_BY_CODE[ruleCode];
+    if (!r) return emptyDash();
+    const label = escapeHtml(I18n.ruleLabel(r.code));
+    const tone = r.status === 'BLOCKED' ? 'warning' : r.status.toLowerCase();
+    const cls = `rule-badge rule-badge--${tone}`;
+    if (!interactive) {
+      return `<span class="${cls}">${label}</span>`;
+    }
+    return `<button class="${cls}" data-track="rule-badge-click" onclick="event.stopPropagation();filterByRule('${r.code}','${source || 'row'}')" title="${escapeHtml(t('table.ruleFilterTitle'))}">${label}</button>`;
+  }
+
+  // ============================================================
+  // SUMMARY KPI CARDS — exactly the 4 HLR statuses
+  // ============================================================
+  function renderSummary() {
+    const orders = filteredOrders({ ignoreStatus: true });
+    const counts = { ACCEPTED: 0, BLOCKED: 0, REJECTED: 0, IN_QUEUE: 0 };
+    for (const o of orders) {
+      counts[o.statusId] = (counts[o.statusId] || 0) + 1;
+    }
+    const cards = [
+      { id: 'ACCEPTED', tone: 'success', count: counts.ACCEPTED, filterId: 'ACCEPTED' },
+      { id: 'BLOCKED',  tone: 'warning', count: counts.BLOCKED,  filterId: 'BLOCKED'  },
+      { id: 'REJECTED', tone: 'error',   count: counts.REJECTED, filterId: 'REJECTED' },
+      { id: 'IN_QUEUE', tone: 'info',    count: counts.IN_QUEUE, filterId: 'IN_QUEUE' },
+    ];
+    document.getElementById('summaryCards').innerHTML = cards.map((c) => {
+      const label = I18n.statusLabel(c.id);
+      const isActive = applied.statuses.size === 1 && applied.statuses.has(c.filterId);
+      const pct = orders.length ? Math.round((c.count / orders.length) * 100) : 0;
+      const extraLine = `<span class="of">${t('summary.of', { count: c.count.toLocaleString(), total: orders.length.toLocaleString() })}</span>`;
+      return `
+        <div class="summary-card ${isActive ? 'is-active' : ''}" title="${label} — ${t('summary.of', { count: c.count.toLocaleString(), total: orders.length.toLocaleString() })}">
+          <div class="header-row">
+            <span class="label">
+              <span class="dot dot-${c.tone}"></span>
+              <span class="label-text">${label}</span>
+            </span>
+            <button type="button" class="filter-link ${isActive ? 'is-active' : ''}"
+              data-track="summary-card-${c.id.toLowerCase()}"
+              onclick="toggleSummaryFilter('${c.filterId}')">
+              ${isActive ? t('summary.clear') : t('summary.filter')}
+            </button>
+          </div>
+          <div class="value-row">
+            <span class="pct">${pct}%</span>
+            ${extraLine}
+          </div>
+        </div>
+      `;
+    }).join('');
+  }
+
+  function toggleSummaryFilter(statusId) {
+    const isActive = applied.statuses.size === 1 && applied.statuses.has(statusId);
+    applied.statuses = new Set(isActive ? [] : [statusId]);
+    draft.statuses = new Set(applied.statuses);
+    renderStatusPanel();
+    syncDropdownLabels();
+    markDirty();
+    view.page = 1;
+    HT.track('summary_card_clicked', { card: statusId, on: !isActive });
+    renderTable();
+  }
+
+  function renderOrderTableHeader() {
+    return `
+      <div class="order-row order-row--head" role="row">
+        <div class="cell-select cell-select--head" aria-hidden="true"></div>
+        <div class="cell cell-status">${t('table.status')}</div>
+        <div class="cell cell-date">${sortableHeaderCell('receivedAt', 'table.receiveDate')}</div>
+        <div class="cell cell-account">${t('table.poc')}</div>
+        <div class="cell cell-rule">${t('table.rule')}</div>
+        <div class="cell cell-po">${t('table.po')}</div>
+        <div class="cell cell-bees">${t('table.bees')}</div>
+        <div class="cell cell-expiration">${sortableHeaderCell('expirationDate', 'table.expiration')}</div>
+        <div class="cell cell-actions">${t('table.actions')}</div>
+      </div>
+    `;
+  }
+
+  function renderOrderTableEmptyBody() {
+    return `
+      <div class="order-table-empty" role="status">
+        <div class="hexa-empty">
+          <hexa-illustration name="NoSearchResults"></hexa-illustration>
+          <h3>${escapeHtml(t('empty.title'))}</h3>
+          <p>${escapeHtml(t('empty.body'))}</p>
+          <button type="button" class="hexa-btn hexa-btn--secondary" data-track="cta-empty-clear" onclick="clearFilters()">
+            <span>${escapeHtml(t('empty.clear'))}</span>
+          </button>
+        </div>
+      </div>`;
+  }
+
+  function renderTable() {
+    renderActiveFilterChips();
+    renderSummary();
+    const orders = filteredOrders();
+    const wrap = document.getElementById('tableWrap');
+    if (!orders.length) {
+      wrap.innerHTML = `
+        <div class="order-table">
+          <div class="order-list">${renderOrderTableHeader()}${renderOrderTableEmptyBody()}</div>
+        </div>
+        ${renderPagination(0, 0, 0, 1)}
+      `;
+      document.getElementById('bulkBar').hidden = true;
+      return;
+    }
+
+    const total = orders.length;
+    const pageSize = view.pageSize;
+    const totalPages = Math.max(1, Math.ceil(total / pageSize));
+    if (view.page > totalPages) view.page = totalPages;
+    const start = (view.page - 1) * pageSize;
+    const end = Math.min(start + pageSize, total);
+    const pageOrders = orders.slice(start, end);
+
+    const rows = pageOrders.map((o) => {
+      const rowSelectable = isRowBulkSelectable(o);
+      const checked = view.selected.has(o.id);
+      const checkboxCell = rowSelectable
+        ? `<label class="cell-select" onclick="event.stopPropagation()" title="${escapeHtml(t('table.selectBulk'))}">
+             <input type="checkbox" data-track="row-select-${o.statusId.toLowerCase()}"
+                    ${checked ? 'checked' : ''}
+                    onchange="toggleRowSelection('${o.id}', this.checked)" />
+           </label>`
+        : `<span class="cell-select cell-select--disabled" title="${escapeHtml(t('table.cantBulk'))}"></span>`;
+
+      const policy = getOrderActionPolicy(o);
+      const reprocessEligible = isReprocessEligible(o);
+      const reprocessAllowed = canReprocessOrder(o);
+      const actionTitle = reprocessAllowed ? t('table.takeAction') : reprocessBlockedTitle(o);
+      const actionBtn = reprocessEligible
+        ? `<button type="button" class="row-action row-action--primary"
+                 data-track="row-take-action-${o.statusId.toLowerCase()}"
+                 ${reprocessAllowed ? `onclick="event.stopPropagation();openDrawer('${o.id}')"` : 'disabled'}
+                 title="${escapeHtml(actionTitle)}">
+             <hexa-icon name="SyncIcon"></hexa-icon>
+           </button>`
+        : '';
+
+      return `
+        <div class="order-row ${rowSelectable ? 'is-selectable' : ''} ${checked ? 'is-selected' : ''}"
+             data-id="${o.id}"
+             onclick="openItemPage('${o.id}')"
+             data-track="row-open-items"
+             role="button" tabindex="0"
+             onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();openItemPage('${o.id}')}">
+          ${checkboxCell}
+          <div class="cell cell-status">${statusPill(o)}</div>
+          <div class="cell cell-date">${fmtDateOnly(o.receivedAt)}</div>
+          <div class="cell cell-account">
+            <span class="cell-account-name">${escapeHtml(o.pocName)}</span>
+            <span class="cell-account-id">${o.pocId}</span>
+          </div>
+          <div class="cell cell-rule">${ruleBadge(o.ruleCode, 'row')}</div>
+          <div class="cell cell-po mono">${o.poNumber}</div>
+          <div class="cell cell-bees">${beesOrderNumberHtml(o, 'row')}</div>
+          <div class="cell cell-expiration">${fmtDateOnly(o.expirationDate)}</div>
+          <div class="row-actions" onclick="event.stopPropagation()">
+            ${actionBtn}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    const headerRow = renderOrderTableHeader();
+
+    wrap.innerHTML = `
+      <div class="order-table">
+        <div class="order-list">${headerRow}${rows}</div>
+      </div>
+      ${renderPagination(start, end, total, totalPages)}
+    `;
+
+    syncBulkBar(pageOrders);
+  }
+
+  function renderPagination(start, end, total, totalPages) {
+    const cur = view.page;
+    const isEmpty = total === 0;
+    const rangeMeta = isEmpty
+      ? t('pagination.range', { start: '0', end: '0', total: '0' })
+      : t('pagination.range', { start: (start + 1).toLocaleString(), end: end.toLocaleString(), total: total.toLocaleString() });
+    const set = isEmpty ? [] : new Set([1, totalPages, cur, cur - 1, cur + 1]);
+    const pageNums = [...set].filter(n => n >= 1 && n <= totalPages).sort((a, b) => a - b);
+    const buttons = [];
+    let prev = 0;
+    for (const n of pageNums) {
+      if (n - prev > 1) buttons.push(`<span class="page-ellipsis">…</span>`);
+      buttons.push(`<button class="page-btn ${n === cur ? 'is-current' : ''}" onclick="goToPage(${n})" data-track="pagination-page" aria-label="${escapeHtml(t('pagination.page', { n }))}" ${isEmpty ? 'disabled' : ''}>${n}</button>`);
+      prev = n;
+    }
+    const navDisabled = isEmpty || cur === 1;
+    const navEndDisabled = isEmpty || cur === totalPages;
+    return `
+      <div class="pagination">
+        <span class="meta">${rangeMeta}</span>
+        <label class="page-size">
+          ${t('pagination.linesPerPage')}
+          <select class="hexa-select" onchange="changePageSize(this.value)" ${isEmpty ? 'disabled' : ''}>
+            ${[10, 25, 50, 100].map(n => `<option value="${n}" ${n === view.pageSize ? 'selected' : ''}>${n}</option>`).join('')}
+          </select>
+        </label>
+        <div class="pages">
+          <button class="page-btn" onclick="goToPage(1)"          ${navDisabled ? 'disabled' : ''} data-track="pagination-first" aria-label="${escapeHtml(t('pagination.first'))}"><hexa-icon name="ChevronDoubleLeftIcon"></hexa-icon></button>
+          <button class="page-btn" onclick="goToPage(${cur - 1})" ${navDisabled ? 'disabled' : ''} data-track="pagination-prev"  aria-label="${escapeHtml(t('pagination.prev'))}"><hexa-icon name="ChevronLeftIcon"></hexa-icon></button>
+          ${isEmpty ? `<button class="page-btn is-current" disabled aria-current="page">1</button>` : buttons.join('')}
+          <button class="page-btn" onclick="goToPage(${cur + 1})" ${navEndDisabled ? 'disabled' : ''} data-track="pagination-next" aria-label="${escapeHtml(t('pagination.next'))}"><hexa-icon name="ChevronRightIcon"></hexa-icon></button>
+          <button class="page-btn" onclick="goToPage(${totalPages})" ${navEndDisabled ? 'disabled' : ''} data-track="pagination-last" aria-label="${escapeHtml(t('pagination.last'))}"><hexa-icon name="ChevronDoubleRightIcon"></hexa-icon></button>
+        </div>
+      </div>
+    `;
+  }
+
+  function goToPage(n) {
+    if (n < 1) return;
+    view.page = n;
+    HT.track('pagination_changed', { page: n });
+    renderTable();
+    document.querySelector('.order-list')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
+  function changePageSize(n) {
+    view.pageSize = Number(n);
+    view.page = 1;
+    HT.track('page_size_changed', { size: view.pageSize });
+    renderTable();
+  }
+
+  renderTable();
+
+  // ============================================================
+  // REPROCESS — rule-specific corrective actions (HLR Blocked + Rejected tables)
+  //
+  // Outcome model (mock):
+  //   • POC_NOT_FOUND / INVALID_PACKAGING / SKU_AVAILABILITY → 60% Accepted, 40% Blocked again (same rule)
+  //   • PO_DUPLICATED                     → 90% Accepted (bypass works almost always)
+  //   • UPC_NOT_FOUND (with chosen UPCs)  → 85% Accepted, 15% Blocked again
+  //   • PRICE_MISMATCH (with chosen price)→ 95% Accepted (bypassed validation)
+  //   • Rejected rules — reprocess as-is  → 30% Accepted, 70% Rejected again
+  //   • Rejected rules — bypass rule      → 90% Accepted, 10% Rejected again
+  // ============================================================
+  function ruleOutcomeProbabilities(ruleCode, action) {
+    if (ruleCode === 'PO_DUPLICATED')    return { accepted: 0.90, blocked: 0, rejected: 0.10 };
+    if (ruleCode === 'PRICE_MISMATCH')   return { accepted: 0.95, blocked: 0, rejected: 0.05 };
+    if (ruleCode === 'UPC_NOT_FOUND')    return { accepted: 0.85, blocked: 0.10, rejected: 0.05 };
+    if (ruleCode === 'POC_NOT_FOUND' || ruleCode === 'INVALID_PACKAGING' || ruleCode === 'SKU_AVAILABILITY') {
+      return { accepted: 0.60, blocked: 0.35, rejected: 0.05 };
+    }
+    if (action === 'bypass') return { accepted: 0.90, blocked: 0, rejected: 0.10 };
+    return { accepted: 0.30, blocked: 0, rejected: 0.70 }; // rejected as-is
+  }
+
+  function applyReprocessOutcome(o, actionPayload) {
+    // actionPayload: { type: 'reprocess-no-fix' | 'bypass-only' | 'upc-selector' | 'price-choice' | 'rejected-choice',
+    //                  ruleCode, chosenPrice?, chosenUpcs?, rejectedChoice? }
+    const probs = ruleOutcomeProbabilities(actionPayload.ruleCode, actionPayload.rejectedChoice || actionPayload.type);
+    const r = Math.random();
+    let outcome;
+    if (r < probs.accepted) outcome = 'ACCEPTED';
+    else if (r < probs.accepted + probs.blocked) outcome = 'BLOCKED';
+    else outcome = 'REJECTED';
+
+    if (outcome === 'ACCEPTED') {
+      o.statusId = 'ACCEPTED';
+      o.statusLabel = 'Accepted';
+      o.statusTone = 'success';
+      o.ruleCode = null;
+      o.ruleLabel = null;
+      ensureBeesOrderNumber(o);
+      // Re-mark lines as OK now that the order was accepted.
+      o.items.forEach((it) => { it.status = 'OK'; it.ruleCode = null; });
+    } else if (outcome === 'BLOCKED') {
+      o.statusId = 'BLOCKED';
+      o.statusLabel = I18n.statusLabel('BLOCKED');
+      o.statusTone = 'warning';
+      o.items.forEach((it) => {
+        if (it.ruleCode) it.status = 'ALERT';
+      });
+      ensureBeesOrderNumber(o);
+    } else {
+      o.statusId = 'REJECTED';
+      o.statusLabel = 'Rejected';
+      o.statusTone = 'error';
+      o.beesOrderNumber = null;
+    }
+
+    // Audit trail entry — chosen action is preserved (FR-14).
+    const auditDetail = describeAction(actionPayload);
+    o.audit.push({
+      ts: new Date().toISOString(),
+      event: `Reprocess requested — ${auditDetail}`,
+      actor: 'Ops user',
+    });
+    o.audit.push({
+      ts: new Date().toISOString(),
+      event: `Outcome: ${o.statusLabel}`,
+      actor: 'BRE',
+    });
+  }
+
+  function describeAction(p) {
+    if (p.type === 'reprocess-no-fix') return `${p.ruleCode}: reprocess without fixes`;
+    if (p.type === 'bypass-only')      return `${p.ruleCode}: accepted and reprocessed`;
+    if (p.type === 'upc-selector')     return `${p.ruleCode}: selected new UPCs for ${Object.keys(p.chosenUpcs || {}).length} line(s)`;
+    if (p.type === 'price-choice')     return `${p.ruleCode}: applied ${p.chosenPrice === 'bees' ? 'BEES contract price' : "chain's requested price"}, price validation bypassed`;
+    if (p.type === 'rejected-choice')  return `${p.ruleCode}: ${p.rejectedChoice === 'bypass' ? 'bypassed rule and reprocessed' : 'reprocessed without fixes'}`;
+    return p.ruleCode || 'unknown';
+  }
+
+  // ============================================================
+  // ORDER TIMELINE — audit trail + resolution notes (chronological)
+  // ============================================================
+  function buildOrderTimelineEvents(o, { includeNotes = true } = {}) {
+    const events = [];
+    (o.audit || []).forEach((a) => {
+      if (includeNotes && String(a.event).startsWith('Resolution note added')) return;
+      events.push({ kind: 'event', ts: a.ts, event: a.event, actor: a.actor });
+    });
+    if (includeNotes) {
+      (o.notes || []).forEach((n) => {
+        events.push({ kind: 'note', ts: n.ts, category: n.category, body: n.body, author: n.author });
+      });
+    }
+    events.sort((a, b) => new Date(a.ts) - new Date(b.ts));
+    return events;
+  }
+
+  function renderOrderTimelineItems(o, options) {
+    const events = buildOrderTimelineEvents(o, options);
+    if (!events.length) {
+      return `<li class="text-body-sm text-fg-neutral-tertiary">${t('timeline.none')}</li>`;
+    }
+    return events.map((e) => {
+      if (e.kind === 'note') {
+        return `
+          <li class="timeline-item timeline-item--note">
+            <span class="timeline-dot timeline-dot--note" aria-hidden="true"></span>
+            <div class="timeline-note-card">
+              <div class="note-meta">
+                <span class="note-cat hexa-tag">${t('timeline.resolutionNote')}</span>
+                <span class="note-cat hexa-tag">${escapeHtml(I18n.noteCategoryLabel(e.category))}</span>
+              </div>
+              <div class="note-body">${escapeHtml(e.body)}</div>
+              <div class="text-body-xs text-fg-neutral-tertiary">${fmtDate(e.ts)} · ${escapeHtml(I18n.translateActor(e.author))}</div>
+            </div>
+          </li>`;
+      }
+      return `
+        <li class="timeline-item">
+          <span class="timeline-dot" aria-hidden="true"></span>
+          <div>
+            <div class="text-body-sm">${escapeHtml(I18n.translateAuditEvent(e.event))}</div>
+            <div class="text-body-xs text-fg-neutral-tertiary">${fmtDate(e.ts)} · ${escapeHtml(I18n.translateActor(e.actor))}</div>
+          </div>
+        </li>`;
+    }).join('');
+  }
+
+  function syncItemTimelinePanel() {
+    const btn = document.getElementById('itemTimelineToggle');
+    const panel = document.getElementById('itemTimelinePanel');
+    if (!btn || !panel) return;
+    btn.setAttribute('aria-expanded', String(view.itemTimelineOpen));
+    panel.hidden = !view.itemTimelineOpen;
+  }
+
+  function toggleItemTimeline() {
+    view.itemTimelineOpen = !view.itemTimelineOpen;
+    syncItemTimelinePanel();
+    HT.track('item_timeline_toggled', { open: view.itemTimelineOpen });
+  }
+
+  function renderItemPageTimeline(o) {
+    const card = document.getElementById('itemPageTimeline');
+    const countEl = document.getElementById('itemTimelineCount');
+    const listEl = document.getElementById('itemTimelineList');
+    if (!card || !countEl || !listEl) return;
+
+    if (view.itemTimelineOrderId !== o.id) {
+      view.itemTimelineOrderId = o.id;
+      view.itemTimelineOpen = false;
+    }
+
+    const events = buildOrderTimelineEvents(o);
+    card.hidden = false;
+    countEl.textContent = events.length === 1
+      ? t('details.timelineOne', { count: events.length })
+      : t('details.timelineMany', { count: events.length });
+    listEl.innerHTML = renderOrderTimelineItems(o);
+    syncItemTimelinePanel();
+  }
+
+  // ============================================================
+  // DRAWER — rule-aware corrective action UI
+  // ============================================================
+  function openDrawer(id) {
+    const o = D.orders.find((x) => x.id === id);
+    if (!o) return;
+    view.openOrderId = id;
+    view.drawerSelectedUpcs = {};
+    view.drawerPriceChoice = 'bees';
+    view.drawerRejectedChoice = 'as-is';
+    HT.track('order_drawer_opened', { status: o.statusId, rule_category: o.ruleCode || null });
+    populateDrawer(o);
+    document.getElementById('orderDrawer').hidden = false;
+    document.getElementById('drawerScrim').hidden = false;
+  }
+  function closeDrawer() {
+    if (!view.openOrderId) return;
+    view.openOrderId = null;
+    view.noteComposerOpen = false;
+    document.getElementById('orderDrawer').hidden = true;
+    document.getElementById('drawerScrim').hidden = true;
+    HT.track('order_drawer_closed');
+  }
+
+  function populateDrawer(o) {
+    document.getElementById('drawerTitle').textContent = 'PO ' + o.poNumber;
+    const rule = getActionRule(o);
+    const counts = lineCounts(o);
+    const orderRuleCode = o.ruleCode;
+    const reasonCopy = orderRuleCode
+      ? (orderRuleCode === 'PRODUCT_ISSUES' ? I18n.ruleOrderCopy('PRODUCT_ISSUES') : I18n.ruleOrderCopy(orderRuleCode))
+      : '';
+
+    const deliveryContext = (orderRuleCode === 'INVALID_DELIVERY_WINDOW' || orderRuleCode === 'INVALID_DELIVERY_RANGE')
+      ? `<p class="issue-compare issue-compare--delivery text-body-sm" style="margin-top:8px">
+          <span>${t('action.deliveryRequested')} <strong>${fmtDateOnly(o.requestedDeliveryDate)}</strong></span>
+          · <span>${t('action.deliveryFirstValid')} <strong>${fmtDateOnly(o.firstValidDeliveryDate)}</strong></span>
+        </p>`
+      : '';
+
+    const poDuplicatedContext = orderRuleCode === 'PO_DUPLICATED'
+      ? `<p class="issue-compare issue-compare--duplicate text-body-sm" style="margin-top:8px">
+          <span>${t('drawer.duplicateBeesOrder')}: ${duplicateBeesOrderHtml(o, 'drawer')}</span>
+        </p>`
+      : '';
+
+    const reasonBlock = orderRuleCode ? `
+      <div class="hexa-alert hexa-alert--${o.statusTone === 'error' ? 'error' : 'warning'}">
+        <hexa-icon name="${o.statusTone === 'error' ? 'AlertOctagonIcon' : 'AlertTriangleIcon'}"></hexa-icon>
+        <div class="hexa-alert-body">
+          <div class="hexa-alert-title">
+            ${o.statusTone === 'error' ? t('drawer.whyRejected') : t('drawer.whyBlocked')}
+            ${ruleBadge(orderRuleCode, 'drawer', false)}
+          </div>
+          ${escapeHtml(reasonCopy)}
+          ${deliveryContext}
+          ${poDuplicatedContext}
+          ${counts.OK > 0 ? `<p class="text-body-xs text-fg-neutral-secondary" style="margin-top:8px">${escapeHtml(lineProgressDetailText(counts))}</p>` : ''}
+        </div>
+      </div>` : '';
+
+    const actionSection = (isReprocessEligible(o)) ? renderActionUi(o, rule, 'drawer') : (getOrderActionPolicy(o).note || getOrderActionPolicy(o).accept ? '' : `
+      <div class="section">
+        <h4>${t('drawer.noAction')}</h4>
+        <p class="text-body-sm text-fg-neutral-secondary">${o.statusId === 'ACCEPTED' ? t('drawer.acceptedMsg') : t('drawer.queueMsg')}</p>
+      </div>
+    `);
+
+    // ---- Resolution notes ----
+    const notesList = (o.notes || []).map((n) => `
+      <li class="note-item">
+        <div class="note-meta">
+          <span class="note-cat hexa-tag">${escapeHtml(I18n.noteCategoryLabel(n.category))}</span>
+          <span class="text-body-xs text-fg-neutral-tertiary">${fmtDate(n.ts)} · ${escapeHtml(I18n.translateActor(n.author))}</span>
+        </div>
+        <div class="note-body">${escapeHtml(n.body)}</div>
+      </li>
+    `).join('') || `<li class="text-body-sm text-fg-neutral-tertiary">${t('drawer.noNotes')}</li>`;
+
+    // ---- Audit trail (timeline) ----
+    const audit = renderOrderTimelineItems(o, { includeNotes: false });
+
+    document.getElementById('drawerBody').innerHTML = `
+      <div class="section drawer-status-section">
+        ${statusPill(o)}
+        ${reasonBlock}
+      </div>
+      <div class="section">
+        <h4>${t('drawer.order')}</h4>
+        <dl class="kv">
+          <dt>${t('drawer.receiveDate')}</dt><dd>${fmtDate(o.receivedAt)}</dd>
+          <dt>${t('drawer.requestedDelivery')}</dt><dd>${fmtDateOnly(o.requestedDeliveryDate)}</dd>
+          <dt>${t('drawer.firstValidDelivery')}</dt><dd>${fmtDateOnly(o.firstValidDeliveryDate)}</dd>
+          <dt>${t('drawer.retailer')}</dt><dd>${escapeHtml(o.chainName)}</dd>
+          <dt>${t('drawer.poc')}</dt><dd>${escapeHtml(o.pocName)}<br><span class="text-body-xs text-fg-neutral-tertiary">${o.pocId} · ${escapeHtml(o.pocCity)} · ${o.pocRegion}</span></dd>
+          <dt>${t('drawer.vendor')}</dt><dd>${escapeHtml(o.vendorName)}</dd>
+          <dt>${t('drawer.po')}</dt><dd style="font-family:ui-monospace,Menlo,monospace">${o.poNumber}</dd>
+          ${isPoDuplicatedOrder(o) ? `<dt>${t('drawer.duplicateBeesOrder')}</dt><dd>${duplicateBeesOrderHtml(o, 'drawer')}</dd>` : ''}
+          <dt>${t('drawer.bees')}</dt><dd>${beesOrderNumberHtml(o, 'drawer')}</dd>
+          <dt>${t('drawer.items')}</dt><dd>${o.itemCount}</dd>
+          <dt>${t('drawer.totalValue')}</dt><dd>${fmtMoney(o.totalValue)}</dd>
+        </dl>
+      </div>
+      ${actionSection}
+      <div class="section drawer-notes-section">
+        <h4>${t('drawer.notes', { count: (o.notes || []).length })}</h4>
+        <ul class="note-list">${notesList}</ul>
+        <div class="drawer-note-composer" id="drawerNoteComposer" ${view.noteComposerOpen && view.openOrderId === o.id ? '' : 'hidden'}>
+          <label class="hexa-field">
+            <span class="hexa-label">${t('drawer.category')}</span>
+            <select class="hexa-select" id="drawerNoteCategory">
+              ${I18n.NOTE_CATEGORY_KEYS.map((c) => `<option value="${c}">${escapeHtml(I18n.noteCategoryLabel(c))}</option>`).join('')}
+            </select>
+          </label>
+          <label class="hexa-field">
+            <span class="hexa-label">${t('drawer.note')}</span>
+            <textarea class="hexa-textarea drawer-note-input" id="drawerNoteInput" maxlength="250" rows="3"
+              placeholder="${escapeHtml(t('drawer.notePlaceholder'))}"
+              oninput="updateDrawerNoteCount(this)"></textarea>
+            <span class="drawer-note-count text-body-xs text-fg-neutral-tertiary" aria-live="polite">
+              <span id="drawerNoteCount">0</span>/250
+            </span>
+          </label>
+          <div class="drawer-note-actions">
+            <button type="button" class="hexa-btn hexa-btn--primary hexa-btn--sm" data-track="drawer-save-note" onclick="submitDrawerNote('${o.id}')">
+              ${t('drawer.saveNote')}
+            </button>
+            <button type="button" class="hexa-btn hexa-btn--tertiary hexa-btn--sm" data-track="drawer-cancel-note" onclick="cancelDrawerNoteComposer()">
+              ${t('drawer.cancel')}
+            </button>
+          </div>
+        </div>
+        <button type="button" class="hexa-btn hexa-btn--tertiary hexa-btn--sm" id="drawerAddNoteBtn" data-track="drawer-add-note"
+          onclick="toggleDrawerNoteComposer('${o.id}')" ${!canAddNote(o) || (view.noteComposerOpen && view.openOrderId === o.id) ? 'hidden' : ''}>
+          <hexa-icon name="EditIcon"></hexa-icon> ${t('drawer.addNote')}
+        </button>
+      </div>
+      <div class="section">
+        <h4>${t('drawer.timeline')}</h4>
+        <ul class="timeline">${audit}</ul>
+      </div>
+    `;
+
+    const policy = getOrderActionPolicy(o);
+    const footer = document.getElementById('drawerFooter');
+    const closeFooterBtn = `<button type="button" class="hexa-btn hexa-btn--tertiary" data-track="drawer-close" onclick="closeDrawer()">${t('drawer.close')}</button>`;
+    const cancelFooterBtn = `<button type="button" class="hexa-btn hexa-btn--tertiary" data-track="drawer-cancel" onclick="closeDrawer()">${t('drawer.cancel')}</button>`;
+    const drawerFooterHtml = (start, end) => `
+      <div class="drawer-footer-actions drawer-footer-actions--start">${start}</div>
+      <div class="drawer-footer-actions drawer-footer-actions--end">${end}</div>`;
+    const startBtn = (policy.reprocess || policy.accept) ? cancelFooterBtn : closeFooterBtn;
+    const endBtn = policy.reprocess
+      ? renderActionFooter(o, getActionRule(o) || { code: o.ruleCode, action: 'reprocess-no-fix' }, 'drawer')
+      : (policy.accept ? renderActionFooter(o, getActionRule(o), 'drawer') : '');
+    footer.innerHTML = drawerFooterHtml(startBtn, endBtn);
+
+    if (view.noteComposerOpen && view.openOrderId === o.id) {
+      requestAnimationFrame(() => document.getElementById('drawerNoteInput')?.focus());
+    }
+  }
+
+  function renderActionFooter(o, rule, ctx) {
+    const policy = getOrderActionPolicy(o);
+    const track = ctx === 'item-page' ? 'item-page' : 'drawer';
+    if (policy.accept) {
+      const onclick = ctx === 'drawer'
+        ? `acceptOrder('${o.id}')`
+        : `acceptOrder(view.itemPageOrderId)`;
+      return `
+      <button type="button" class="hexa-btn hexa-btn--primary" data-track="${track}-accept-order" onclick="${onclick}">
+        <hexa-icon name="CheckIcon"></hexa-icon>
+        ${escapeHtml(t('details.acceptOrder'))}
+      </button>`;
+    }
+    if (!policy.reprocess || !rule) return '';
+    const allowed = canReprocessOrder(o);
+    const btnId = ctx === 'item-page' ? 'itemPagePrimary' : 'drawerPrimary';
+    const onclick = usesReprocessConfirmModal(rule)
+      ? (ctx === 'item-page' ? 'openReprocessModal()' : `openReprocessModal('${o.id}', 'drawer')`)
+      : (ctx === 'item-page' ? 'executeItemPageAction()' : 'executeDrawerAction()');
+    const label = I18n.ruleActionLabel(o.ruleCode) || I18n.ruleActionLabel(rule.code);
+    const titleAttr = allowed ? '' : ` title="${escapeHtml(reprocessBlockedTitle(o))}"`;
+    return `
+      <button type="button" class="hexa-btn hexa-btn--primary" id="${btnId}"${titleAttr}
+        data-track="${track}-action-${rule.code.toLowerCase()}" ${allowed ? `onclick="${onclick}"` : 'disabled'}>
+        <hexa-icon name="SyncIcon"></hexa-icon>
+        ${escapeHtml(label)}
+      </button>`;
+  }
+
+  function setDrawerUpc(lineNumber, sku) {
+    view.drawerSelectedUpcs[lineNumber] = sku;
+  }
+
+  function setItemLineUpc(lineNumber, sku) {
+    if (!sku) return;
+    setDrawerUpc(lineNumber, sku);
+    HT.track('item_page_upc_selected', { line: lineNumber, has_value: true });
+    if (view.itemPageOrderId) renderItemPage(view.itemPageOrderId);
+  }
+
+  function renderUpcSelectedChip(sku) {
+    const p = catalogProduct(sku);
+    if (!p) return '';
+    return `
+      <div class="upc-selected-chip">
+        <hexa-icon name="CheckIcon"></hexa-icon>
+        <div class="upc-selected-chip-text">
+          <span class="hexa-field-label">${t('action.upcSelected')}</span>
+          <span class="upc-pick-sku mono">${p.sku}</span>
+          <span class="upc-pick-name">${escapeHtml(p.name)}</span>
+        </div>
+        <button type="button" class="hexa-btn hexa-btn--tertiary hexa-btn--sm" data-track="upc-modal-clear"
+          onclick="clearUpcFixPick()">${t('action.changeUpc')}</button>
+      </div>`;
+  }
+
+  function renderUpcSearchResultButtons(items, pickedSku) {
+    if (!items.length) {
+      return `<div class="upc-search-empty">${t('action.upcNoResults')}</div>`;
+    }
+    return items.map((item) => `
+      <button type="button" class="upc-search-result ${pickedSku === item.sku ? 'is-active' : ''}"
+        role="option" aria-selected="${pickedSku === item.sku}" data-sku="${item.sku}" data-track="upc-modal-result"
+        onclick="pickUpcFromSearch('${item.sku}')">
+        <span class="upc-search-result-main">
+          <span class="upc-pick-sku mono">${item.sku}</span>
+          <span class="upc-pick-name">${escapeHtml(item.name)}</span>
+        </span>
+        <span class="upc-search-result-meta">${escapeHtml(item.family)}</span>
+      </button>
+    `).join('');
+  }
+
+  function renderUpcSearchModalBody(it, selectedSku) {
+    return `
+      <div class="upc-search">
+        <label class="hexa-field">
+          <span class="hexa-field-label">${t('action.searchUpcLabel')}</span>
+          <span class="hexa-input-wrap">
+            <hexa-icon name="SearchIcon"></hexa-icon>
+            <input type="search" class="hexa-input upc-search-input" id="upcFixSearchInput"
+              placeholder="${escapeHtml(t('action.searchUpcPlaceholder'))}" autocomplete="off"
+              oninput="onUpcFixSearchInput(this.value, '${it.sku}')" />
+          </span>
+          <span class="hexa-field-hint" id="upcFixSearchHint">${t('action.upcSearchHint')}</span>
+        </label>
+        <div class="upc-search-results-wrap">
+          <div class="upc-search-results" id="upcFixSearchResults" role="listbox" aria-label="${escapeHtml(t('action.searchUpcLabel'))}"></div>
+        </div>
+        <div class="upc-search-selected ${selectedSku ? '' : 'is-hidden'}" id="upcFixSelectedPreview">
+          ${selectedSku ? renderUpcSelectedChip(selectedSku) : ''}
+        </div>
+        <input type="hidden" id="upcFixPickedSku" value="${escapeHtml(selectedSku || '')}" />
+      </div>`;
+  }
+
+  function onUpcFixSearchInput(query, excludeSku) {
+    const hint = document.getElementById('upcFixSearchHint');
+    const results = document.getElementById('upcFixSearchResults');
+    const q = (query || '').trim();
+    document.querySelector('#upcFixModal .upc-search')?.classList.remove('is-invalid');
+
+    if (q.length < 2) {
+      if (hint) hint.textContent = t('action.upcSearchHint');
+      if (results) results.innerHTML = '';
+      return;
+    }
+
+    const items = searchCatalog(q, excludeSku);
+    const picked = view.upcModalPickedSku || document.getElementById('upcFixPickedSku')?.value || '';
+    if (hint) {
+      hint.textContent = items.length
+        ? t('action.upcSearchCount', { count: String(items.length) })
+        : t('action.upcNoResults');
+    }
+    if (results) results.innerHTML = renderUpcSearchResultButtons(items, picked);
+  }
+
+  function pickUpcFromSearch(sku) {
+    view.upcModalPickedSku = sku;
+    const hidden = document.getElementById('upcFixPickedSku');
+    if (hidden) hidden.value = sku;
+    document.querySelector('#upcFixModal .upc-search')?.classList.remove('is-invalid');
+
+    const preview = document.getElementById('upcFixSelectedPreview');
+    if (preview) {
+      preview.classList.remove('is-hidden');
+      preview.innerHTML = renderUpcSelectedChip(sku);
+    }
+
+    document.querySelectorAll('#upcFixSearchResults .upc-search-result').forEach((btn) => {
+      const active = btn.dataset.sku === sku;
+      btn.classList.toggle('is-active', active);
+      btn.setAttribute('aria-selected', active ? 'true' : 'false');
+    });
+    HT.track('upc_modal_search_pick', { sku });
+  }
+
+  function clearUpcFixPick() {
+    view.upcModalPickedSku = '';
+    const hidden = document.getElementById('upcFixPickedSku');
+    if (hidden) hidden.value = '';
+    const preview = document.getElementById('upcFixSelectedPreview');
+    if (preview) {
+      preview.classList.add('is-hidden');
+      preview.innerHTML = '';
+    }
+    const input = document.getElementById('upcFixSearchInput');
+    const excludeSku = input?.dataset.excludeSku || '';
+    if (input) {
+      input.value = '';
+      input.focus();
+    }
+    onUpcFixSearchInput('', excludeSku);
+    HT.track('upc_modal_search_cleared', {});
+  }
+
+  function openUpcFixModal(lineNumber) {
+    const o = D.orders.find((x) => x.id === view.itemPageOrderId);
+    const it = o?.items.find((x) => x.lineNumber === lineNumber);
+    if (!o || !it || it.ruleCode !== 'UPC_NOT_FOUND') return;
+
+    view.itemUpcModalLine = lineNumber;
+    const selected = view.drawerSelectedUpcs[lineNumber] || '';
+    view.upcModalPickedSku = selected;
+    const modal = document.getElementById('upcFixModal');
+
+    document.getElementById('upcFixModalTitle').textContent = t('modal.chooseUpc');
+    document.getElementById('upcFixModalSubtitle').textContent =
+      `${t('action.line', { n: String(it.lineNumber).padStart(2, '0') })} · ${escapeHtml(it.name)} · ${t('action.requestedSku', { sku: it.sku })}`;
+    document.getElementById('upcFixModalBody').innerHTML = renderUpcSearchModalBody(it, selected);
+    document.getElementById('upcFixModalFooter').innerHTML = `
+      <button type="button" class="hexa-btn hexa-btn--tertiary" data-track="upc-modal-cancel" onclick="closeUpcFixModal()">${t('drawer.cancel')}</button>
+      <button type="button" class="hexa-btn hexa-btn--primary" data-track="upc-modal-apply" onclick="confirmUpcFixModal()">${t('action.applyUpc')}</button>
+    `;
+
+    const searchInput = document.getElementById('upcFixSearchInput');
+    if (searchInput) searchInput.dataset.excludeSku = it.sku;
+
+    if (typeof modal.showModal === 'function') modal.showModal();
+    else modal.setAttribute('open', '');
+    requestAnimationFrame(() => {
+      document.getElementById('upcFixSearchInput')?.focus();
+      if (selected) onUpcFixSearchInput(selected, it.sku);
+    });
+    HT.track('upc_fix_modal_opened', { line: lineNumber });
+  }
+
+  function closeUpcFixModal() {
+    const modal = document.getElementById('upcFixModal');
+    view.itemUpcModalLine = null;
+    view.upcModalPickedSku = '';
+    if (modal.open) modal.close();
+    else modal.removeAttribute('open');
+  }
+
+  function confirmUpcFixModal() {
+    const lineNumber = view.itemUpcModalLine;
+    const picked = view.upcModalPickedSku || document.getElementById('upcFixPickedSku')?.value;
+    if (!picked) {
+      document.querySelector('#upcFixModal .upc-search')?.classList.add('is-invalid');
+      document.getElementById('upcFixSearchInput')?.focus();
+      return;
+    }
+    setItemLineUpc(lineNumber, picked);
+    closeUpcFixModal();
+    HT.track('upc_fix_modal_applied', { line: lineNumber });
+  }
+
+  function renderUpcSelectOptions(it, selectedSku) {
+    return alternativeUpcs(it.sku).map((a) =>
+      `<option value="${a.sku}" ${selectedSku === a.sku ? 'selected' : ''}>${a.sku} · ${escapeHtml(a.name)}</option>`
+    ).join('');
+  }
+
+  function renderLineUpcSelect(it, track, onchangeFn = 'setItemLineUpc') {
+    const selected = view.drawerSelectedUpcs[it.lineNumber] || '';
+    return `
+      <select class="hexa-select item-line-upc-select" data-track="${track}" data-line="${it.lineNumber}"
+              onchange="${onchangeFn}(${it.lineNumber}, this.value)">
+        <option value="">${escapeHtml(t('action.chooseUpc'))}</option>
+        ${renderUpcSelectOptions(it, selected)}
+      </select>`;
+  }
+
+  function renderItemLineUpcActionSlot(it) {
+    return '';
+  }
+
+  function renderLineRejectButton(orderId, it) {
+    return `
+      <button type="button" class="row-action row-action--destructive" data-track="line-reject"
+        aria-label="${escapeHtml(t('action.rejectLine'))}"
+        onclick="event.stopPropagation();rejectLine('${orderId}', ${it.lineNumber})"
+        title="${escapeHtml(t('action.rejectLineHint'))}">
+        <hexa-icon name="CloseIcon"></hexa-icon>
+      </button>`;
+  }
+
+  function renderPriceLineActions(orderId, it) {
+    return '';
+  }
+
+  function renderUpcLineActions(o, it) {
+    return '';
+  }
+
+  function renderItemLineActions(o, it) {
+    if (it.status === 'ALERT' && it.ruleCode === 'PRICE_MISMATCH') {
+      return renderPriceLineActions(o.id, it);
+    }
+    if (it.status === 'ALERT' && it.ruleCode === 'UPC_NOT_FOUND') {
+      return renderUpcLineActions(o, it);
+    }
+    return '';
+  }
+
+  function renderItemLinePickedUpc(it) {
+    const selected = view.drawerSelectedUpcs[it.lineNumber];
+    if (!selected) return '';
+    const alt = catalogProduct(selected);
+    return `
+      <span class="item-upc-picked item-upc-picked--inline">
+        <hexa-icon name="CheckIcon"></hexa-icon>
+        <span class="mono">${escapeHtml(selected)}</span>
+        ${alt ? `<span class="item-upc-picked-name">${escapeHtml(alt.name)}</span>` : ''}
+      </span>`;
+  }
+
+  function lineProgressDetailText(counts) {
+    return t('details.lineProgressDetail', {
+      released: counts.OK,
+      rejected: counts.ALERT + counts.REJECTED,
+    });
+  }
+
+  function renderItemLineIssueBlock(it, o) {
+    const lineRule = it.ruleCode ? D.RULE_BY_CODE[it.ruleCode] : null;
+    if (!lineRule && it.status !== 'ALERT') return '';
+
+    const pickedUpc = (it.ruleCode === 'UPC_NOT_FOUND' && it.status === 'ALERT') ? renderItemLinePickedUpc(it) : '';
+    if (!lineRule) return '';
+
+    return `
+      <div class="item-row-issue-wrap">
+        <div class="item-row-issue-toolbar">
+          <div class="item-row-issue item-row-issue--compact item-row-issue-head">
+            ${ruleBadge(lineRule.code, 'item-line', false)}
+            ${pickedUpc}
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function renderActionUi() {
+    return '';
+  }
+
+  function executeDrawerAction() {
+    if (view.openOrderId) executeReprocessAction(view.openOrderId, 'drawer');
+  }
+
+  function executeItemPageAction() {
+    if (view.itemPageOrderId) executeReprocessAction(view.itemPageOrderId, 'item-page');
+  }
+
+  function usesReprocessConfirmModal(rule) {
+    return !!rule && rule.code === 'INVALID_PACKAGING';
+  }
+
+  function reprocessConfirmCopy(rule) {
+    if (rule.action === 'upc-selector') {
+      return {
+        title: t('modal.reprocessResolvedUpcsTitle'),
+        body: t('modal.reprocessResolvedUpcsBody'),
+        confirm: t('modal.confirmReprocessResolvedUpcs'),
+        track: 'upc-reprocess',
+      };
+    }
+    if (rule.code === 'INVALID_PACKAGING') {
+      return {
+        title: t('modal.reprocessOrder'),
+        body: t('modal.reprocessInvalidPackageBody'),
+        confirm: t('modal.confirmReprocess'),
+        track: 'invalid-package-reprocess',
+      };
+    }
+    return null;
+  }
+
+  function renderReprocessConfirmFooter(copy) {
+    return `
+      <button type="button" class="hexa-btn hexa-btn--tertiary" data-track="${copy.track}-cancel" onclick="closeReprocessModal()">${t('drawer.cancel')}</button>
+      <button type="button" class="hexa-btn hexa-btn--primary" data-track="${copy.track}-confirm" onclick="confirmReprocessFromModal()">
+        <hexa-icon name="SyncIcon"></hexa-icon>
+        ${escapeHtml(copy.confirm)}
+      </button>`;
+  }
+
+  function openReprocessModal(orderId, source) {
+    const resolvedOrderId = orderId || view.itemPageOrderId;
+    const resolvedSource = source || 'item-page';
+    const o = D.orders.find((x) => x.id === resolvedOrderId);
+    if (!o || !canReprocessOrder(o)) return;
+    const rule = getActionRule(o) || { code: o.ruleCode, action: 'reprocess-no-fix' };
+
+    view.reprocessModalContext = { orderId: resolvedOrderId, source: resolvedSource };
+    view.drawerPriceChoice = 'bees';
+    view.drawerRejectedChoice = rule.code === 'INVALID_DELIVERY_WINDOW' ? 'as-is' : view.drawerRejectedChoice;
+
+    const modal = document.getElementById('reprocessModal');
+    const confirmCopy = reprocessConfirmCopy(rule);
+    if (confirmCopy) {
+      document.getElementById('reprocessModalTitle').textContent = confirmCopy.title;
+      document.getElementById('reprocessModalSubtitle').textContent = '';
+      document.getElementById('reprocessModalBody').innerHTML = `
+        <p class="text-body-md text-fg-neutral-secondary">${escapeHtml(confirmCopy.body)}</p>`;
+      document.getElementById('reprocessModalFooter').innerHTML = renderReprocessConfirmFooter(confirmCopy);
+    } else {
+      document.getElementById('reprocessModalTitle').textContent = rule.code === 'INVALID_DELIVERY_WINDOW'
+        ? I18n.ruleActionLabel(rule.code)
+        : (I18n.modalTitleForAction(rule.action) || I18n.ruleActionLabel(rule.code));
+      document.getElementById('reprocessModalSubtitle').textContent = I18n.ruleOrderCopy(rule.code) || '';
+      document.getElementById('reprocessModalBody').innerHTML = renderActionUi(o, rule, 'modal');
+      document.getElementById('reprocessModalFooter').innerHTML = `
+        <button type="button" class="hexa-btn hexa-btn--tertiary" data-track="item-page-reprocess-cancel" onclick="closeReprocessModal()">${t('drawer.cancel')}</button>
+        ${renderActionFooter(o, rule, 'item-page')}`;
+    }
+
+    if (typeof modal.showModal === 'function') modal.showModal();
+    else modal.setAttribute('open', '');
+    HT.track('reprocess_modal_opened', { status: o.statusId, rule_category: rule.code, source: resolvedSource });
+  }
+
+  function confirmReprocessFromModal() {
+    const ctx = view.reprocessModalContext || { orderId: view.itemPageOrderId, source: 'item-page' };
+    closeReprocessModal();
+    executeReprocessAction(ctx.orderId, ctx.source);
+  }
+
+  const confirmUpcReprocess = confirmReprocessFromModal;
+
+  function closeReprocessModal() {
+    const modal = document.getElementById('reprocessModal');
+    if (modal.open) modal.close();
+    else modal.removeAttribute('open');
+  }
+
+  function executeReprocessAction(orderId, source) {
+    const o = D.orders.find((x) => x.id === orderId);
+    if (!o || !canReprocessOrder(o)) return;
+    const rule = getActionRule(o);
+    const btnId = source === 'item-page' ? 'itemPagePrimary' : 'drawerPrimary';
+
+    const payload = {
+      type: (rule?.action === 'upc-selector' ? 'reprocess-no-fix' : (rule?.action || 'reprocess-no-fix')),
+      ruleCode: o.ruleCode,
+      chosenPrice: view.drawerPriceChoice,
+      chosenUpcs: { ...view.drawerSelectedUpcs },
+      rejectedChoice: view.drawerRejectedChoice,
+    };
+
+    const btn = document.getElementById(btnId);
+    if (btn) { btn.classList.add('hexa-btn--loading'); btn.disabled = true; }
+
+    HT.track('reprocess_triggered', {
+      status_before: o.statusId,
+      rule_category: o.ruleCode,
+      chosen_action: payload.type,
+      source,
+    });
+
+    setTimeout(() => {
+      applyReprocessOutcome(o, payload);
+      HT.track('reprocess_completed', {
+        status_before: 'BLOCKED_OR_REJECTED',
+        outcome: o.statusId,
+        rule_category: o.ruleCode,
+      });
+      if (btn) { btn.classList.remove('hexa-btn--loading'); btn.disabled = false; }
+      if (source === 'item-page') closeReprocessModal();
+      if (view.openOrderId === orderId) populateDrawer(o);
+      renderTable();
+      const row = document.querySelector(`.order-row[data-id="${o.id}"]`);
+      if (row) row.classList.add('flash');
+      if (view.itemPageOrderId === orderId) renderItemPage(orderId);
+    }, 900);
+  }
+
+  // ============================================================
+  // RESOLUTION NOTES — inline composer in drawer (HLR FR-9)
+  // ============================================================
+  const NOTE_CATEGORIES = I18n.NOTE_CATEGORY_KEYS;
+
+  function updateDrawerNoteCount(el) {
+    const counter = document.getElementById('drawerNoteCount');
+    if (counter) counter.textContent = String(el.value.length);
+  }
+
+  function toggleDrawerNoteComposer(orderId) {
+    const o = D.orders.find((x) => x.id === orderId);
+    if (!o) return;
+    view.noteComposerOpen = true;
+    if (view.openOrderId !== orderId) openDrawer(orderId);
+    else populateDrawer(o);
+    HT.track('resolution_note_composer_opened', { status: o.statusId, rule_category: o.ruleCode || null });
+  }
+
+  function cancelDrawerNoteComposer() {
+    view.noteComposerOpen = false;
+    const o = D.orders.find((x) => x.id === view.openOrderId);
+    if (o) populateDrawer(o);
+    HT.track('resolution_note_composer_cancelled');
+  }
+
+  function addResolutionNote(orderId, category, body) {
+    const o = D.orders.find((x) => x.id === orderId);
+    if (!o || !body) return false;
+    const note = {
+      ts: new Date().toISOString(),
+      category: NOTE_CATEGORIES.includes(category) ? category : 'other',
+      body: body.slice(0, 250),
+      author: 'Ops user',
+    };
+    o.notes = o.notes || [];
+    o.notes.push(note);
+    o.audit.push({ ts: note.ts, event: `Resolution note added (${note.category})`, actor: note.author });
+    HT.track('resolution_note_added', { category: note.category, length: note.body.length });
+    return true;
+  }
+
+  function submitDrawerNote(orderId) {
+    const input = document.getElementById('drawerNoteInput');
+    const categoryEl = document.getElementById('drawerNoteCategory');
+    const body = input?.value.trim();
+    if (!body) {
+      input?.focus();
+      return;
+    }
+    if (!addResolutionNote(orderId, categoryEl?.value || 'other', body)) return;
+    view.noteComposerOpen = false;
+    const o = D.orders.find((x) => x.id === orderId);
+    if (o && view.openOrderId === orderId) populateDrawer(o);
+    if (view.itemPageOrderId === orderId) renderItemPage(orderId);
+  }
+
+  function openNoteDialog(orderId) {
+    const o = D.orders.find((x) => x.id === orderId);
+    if (!o || !canAddNote(o)) return;
+    openResolutionActionModal('add-note', orderId);
+  }
+
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape' && view.openOrderId) closeDrawer(); });
+
+  // ============================================================
+  // BULK SELECTION — reprocess any blocked/rejected orders (mixed rules OK)
+  // ============================================================
+  function isBulkReprocessable(o) {
+    return (o.statusId === 'BLOCKED' || o.statusId === 'REJECTED')
+      && !!o.ruleCode
+      && isReprocessAllowedByDeliveryDate(o);
+  }
+  function isRowBulkSelectable(o) {
+    return isBulkReprocessable(o);
+  }
+  function bulkSelectionMode() {
+    const ids = [...view.selected];
+    if (!ids.length) return null;
+    const orders = ids.map((id) => D.orders.find((o) => o.id === id)).filter(Boolean);
+    if (!orders.length) return null;
+    return orders.every(isBulkReprocessable) ? 'reprocess' : 'mixed';
+  }
+  function isBulkSelectable(o) {
+    return isBulkReprocessable(o);
+  }
+
+  function getCurrentPageOrders() {
+    const orders = filteredOrders();
+    const start = (view.page - 1) * view.pageSize;
+    return orders.slice(start, start + view.pageSize);
+  }
+
+  function getPageBulkTargetIds(pageOrders) {
+    return pageOrders.filter(isBulkReprocessable).map((o) => o.id);
+  }
+
+  function toggleRowSelection(id, on) {
+    const o = D.orders.find((x) => x.id === id);
+    if (on && o && !isRowBulkSelectable(o)) {
+      flashHint(t('bulk.notEligible'));
+      return;
+    }
+    if (on) view.selected.add(id); else view.selected.delete(id);
+    HT.track('row_selection_toggled', { on, rule_category: o ? o.ruleCode : null, total_selected: view.selected.size });
+    renderTable();
+  }
+  function toggleSelectAllOnPage() {
+    const pageOrders = getCurrentPageOrders();
+    const ids = getPageBulkTargetIds(pageOrders);
+    const allTargetSelected = ids.length > 0 && ids.every((id) => view.selected.has(id));
+
+    if (allTargetSelected) {
+      const cleared = view.selected.size;
+      view.selected.clear();
+      HT.track('bulk_selection_cleared', { source: 'select_all', count: cleared });
+    } else {
+      ids.forEach((id) => view.selected.add(id));
+      HT.track('bulk_select_all_filtered', { count: ids.length });
+    }
+    renderTable();
+  }
+  function syncBulkBar(pageOrders) {
+    const bar = document.getElementById('bulkBar');
+    const eligiblePage = pageOrders.filter(isRowBulkSelectable);
+    const targetIds = getPageBulkTargetIds(pageOrders);
+    const showBar = eligiblePage.length > 0 || view.selected.size > 0;
+    bar.hidden = !showBar;
+    if (!showBar) return;
+
+    const mode = bulkSelectionMode();
+    const hintEl = document.getElementById('bulkRuleHint');
+    hintEl.textContent = eligiblePage.length ? t('bulk.hintDefault') : '';
+
+    const selectedOnTarget = targetIds.filter((id) => view.selected.has(id)).length;
+    const allTargetSelected = targetIds.length > 0 && selectedOnTarget === targetIds.length;
+
+    const cb = document.getElementById('bulkSelectAll');
+    cb.disabled = targetIds.length === 0;
+    cb.indeterminate = false;
+    cb.checked = false;
+    if (allTargetSelected) {
+      cb.checked = true;
+    } else if (selectedOnTarget > 0) {
+      cb.indeterminate = true;
+    }
+
+    document.getElementById('bulkSelectAllLabel').textContent =
+      targetIds.length === 0 ? t('bulk.noEligible')
+        : allTargetSelected ? t('bulk.clearSelection', { count: targetIds.length })
+        : t('bulk.selectAll', { count: targetIds.length });
+
+    const total = view.selected.size;
+    document.getElementById('bulkCount').textContent = total === 1 ? t('bulk.selectedOne') : t('bulk.selectedMany', { count: total.toLocaleString() });
+
+    const reBtn = document.getElementById('bulkReprocessBtn');
+    const reprocessEnabled = mode === 'reprocess' && total > 0;
+    reBtn.disabled = !reprocessEnabled;
+    document.getElementById('bulkReprocessLabel').textContent =
+      total > 0 && mode === 'reprocess' ? t('bulk.reprocessCount', { count: total.toLocaleString() }) : t('bulk.reprocess');
+  }
+
+  function bulkReprocessPayload(o) {
+    const rule = getActionRule(o) || { action: 'reprocess-no-fix', code: o.ruleCode };
+    const type = rule.action === 'upc-selector' ? 'reprocess-no-fix' : (rule.action || 'reprocess-no-fix');
+    return { type, ruleCode: o.ruleCode, chosenPrice: 'bees', rejectedChoice: 'as-is' };
+  }
+
+  function reprocessSelected() {
+    const ids = [...view.selected];
+    if (!ids.length) return;
+    const orders = ids.map((id) => D.orders.find((o) => o.id === id)).filter(isBulkReprocessable);
+    if (!orders.length) {
+      flashHint(t('bulk.notEligible'));
+      return;
+    }
+
+    if (ids.length > 50) {
+      const ok = window.confirm(t('bulk.confirm', { count: ids.length }));
+      if (!ok) return;
+      HT.track('bulk_confirmation_shown', { count: ids.length });
+    }
+
+    const btn = document.getElementById('bulkReprocessBtn');
+    btn.disabled = true;
+    btn.classList.add('hexa-btn--loading');
+    const ruleCategories = [...new Set(orders.map((o) => o.ruleCode))];
+    HT.track('bulk_reprocess_triggered', { count: ids.length, rule_categories: ruleCategories });
+
+    setTimeout(() => {
+      const outcomes = { ACCEPTED: 0, BLOCKED: 0, REJECTED: 0, IN_QUEUE: 0 };
+      orders.forEach((o) => {
+        applyReprocessOutcome(o, bulkReprocessPayload(o));
+        outcomes[o.statusId] = (outcomes[o.statusId] || 0) + 1;
+      });
+      HT.track('bulk_reprocess_completed', { count: orders.length, rule_categories: ruleCategories, outcomes });
+      view.selected.clear();
+      btn.classList.remove('hexa-btn--loading');
+      renderTable();
+      orders.forEach((o) => {
+        const row = document.querySelector(`.order-row[data-id="${o.id}"]`);
+        if (row) row.classList.add('flash');
+      });
+    }, 1100);
+  }
+
+  // ============================================================
+  // ITEM-LEVEL PAGE  (#order/<id>)
+  // ============================================================
+  function openItemPage(id) {
+    location.hash = '#order/' + id;
+  }
+
+  function renderItemPage(orderId) {
+    const o = D.orders.find((x) => x.id === orderId);
+    if (!o) {
+      document.getElementById('itemPageSummary').innerHTML = `<div class="text-body-md">${t('details.notFound')} <a href="#orders" class="hexa-link">${t('details.back')}</a></div>`;
+      document.getElementById('itemPageAcceptBtn').setAttribute('hidden', '');
+      document.getElementById('itemPageReprocessBtn').setAttribute('hidden', '');
+      document.getElementById('itemPageRejectBtn').setAttribute('hidden', '');
+      document.getElementById('itemPageNoteBtn').setAttribute('hidden', '');
+      document.getElementById('itemPageTimeline').hidden = true;
+      document.getElementById('itemSummaryCards').innerHTML = '';
+      document.getElementById('itemListWrap').innerHTML = '';
+      return;
+    }
+    view.itemPageOrderId = orderId;
+    if (view._itemPageUpcOrderId !== orderId) {
+      view.drawerSelectedUpcs = {};
+      view.itemUpcModalLine = null;
+      view._itemPageUpcOrderId = orderId;
+    }
+    view.drawerPriceChoice = 'bees';
+    view.drawerRejectedChoice = 'as-is';
+
+    const rule = getActionRule(o);
+    const policy = getOrderActionPolicy(o);
+    const acceptBtn = document.getElementById('itemPageAcceptBtn');
+    const reprocessBtn = document.getElementById('itemPageReprocessBtn');
+    const rejectBtn = document.getElementById('itemPageRejectBtn');
+    const noteBtn = document.getElementById('itemPageNoteBtn');
+
+    setBandBtnVisible(acceptBtn, policy.accept);
+    setBandBtnVisible(reprocessBtn, isReprocessEligible(o));
+    setBandBtnVisible(rejectBtn, false);
+    setBandBtnVisible(noteBtn, policy.note);
+    if (isReprocessEligible(o)) {
+      const allowed = canReprocessOrder(o);
+      reprocessBtn.disabled = !allowed;
+      if (allowed) reprocessBtn.removeAttribute('title');
+      else reprocessBtn.setAttribute('title', reprocessBlockedTitle(o));
+      const reprocessLabel = I18n.ruleActionLabel(o.ruleCode) || I18n.ruleActionLabel(rule?.code);
+      document.getElementById('itemPageReprocessBtnLabel').textContent = reprocessLabel;
+      if (rule?.code) {
+        reprocessBtn.setAttribute('data-track', `item-page-reprocess-open-${rule.code.toLowerCase()}`);
+      }
+    }
+
+    const counts = lineCounts(o);
+    const orderRuleCode = o.ruleCode;
+    const reasonCopy = orderRuleCode
+      ? (orderRuleCode === 'PRODUCT_ISSUES' ? I18n.ruleOrderCopy('PRODUCT_ISSUES') : I18n.ruleOrderCopy(orderRuleCode))
+      : '';
+
+    document.getElementById('itemPageSummary').innerHTML = `
+      <div class="order-details-status">
+        ${statusPill(o)}
+        ${reasonCopy ? `<span class="order-details-reason">${escapeHtml(reasonCopy)}</span>` : ''}
+        ${orderRuleCode ? ruleBadge(orderRuleCode, 'item-page') : ''}
+      </div>
+      <dl class="order-details-grid">
+        <div><dt>${t('details.beesOrder')}</dt><dd>${beesOrderNumberHtml(o, 'item-page')}</dd></div>
+        ${renderPoDuplicatedBeesField(o, 'item-page')}
+        <div><dt>${t('details.po')}</dt><dd><span class="mono">${o.poNumber}</span></dd></div>
+        <div><dt>${t('details.receiveDate')}</dt><dd>${fmtDate(o.receivedAt)}</dd></div>
+        <div><dt>${t('details.requestedDelivery')}</dt><dd>${fmtDateOnly(o.requestedDeliveryDate)}</dd></div>
+        <div><dt>${t('details.firstValidDelivery')}</dt><dd>${fmtDateOnly(o.firstValidDeliveryDate)}</dd></div>
+        <div><dt>${t('table.poc')}</dt><dd>${escapeHtml(o.pocName)} <span class="text-fg-neutral-tertiary">${o.pocId} · ${escapeHtml(o.pocCity)}</span></dd></div>
+        <div><dt>${t('details.retailer')}</dt><dd>${escapeHtml(o.chainName)}</dd></div>
+        <div><dt>${t('details.vendor')}</dt><dd>${escapeHtml(o.vendorName)}</dd></div>
+        <div><dt>${t('details.orderQtySummary')}</dt><dd>${t('details.orderQtyDetail', { lines: o.itemCount.toLocaleString(), qty: (o.orderTotalQty || 0).toLocaleString() })}</dd></div>
+        <div><dt>${t('details.minOrderQty')}</dt><dd>${(o.minOrderQty || 0).toLocaleString()}</dd></div>
+        <div><dt>${t('details.maxOrderQty')}</dt><dd>${(o.maxOrderQty || 0).toLocaleString()}</dd></div>
+        <div><dt>${t('details.totalValue')}</dt><dd><strong>${fmtMoney(o.totalValue)}</strong></dd></div>
+      </dl>
+    `;
+
+    renderItemPageTimeline(o);
+
+    const chipDef = [
+      { key: 'OK',       tone: 'success' },
+      { key: 'ALERT',    tone: 'error' },
+      { key: 'REJECTED', tone: 'error'   },
+      { key: 'PENDING',  tone: 'info'    },
+    ].filter((c) => counts[c.key] > 0);
+
+    document.getElementById('itemSummaryCards').innerHTML = chipDef.map((c) => `
+      <div class="item-stat">
+        <span class="item-stat-dot dot-${c.tone}"></span>
+        <span class="item-stat-num">${counts[c.key]}</span>
+        <span class="item-stat-label">${I18n.lineStatusLabel(c.key)}</span>
+      </div>
+    `).join('');
+
+    const severity = { REJECTED: 0, ALERT: 1, PENDING: 2, OK: 3 };
+    const lines = [...o.items].sort((a, b) => severity[a.status] - severity[b.status]);
+
+    const itemRows = lines.map((it) => {
+      const lineTone = it.status === 'REJECTED' || it.status === 'ALERT' ? 'error'
+                     : it.status === 'PENDING'  ? 'info'
+                     : 'success';
+      const lineLabel = I18n.lineStatusLabel(it.status);
+      const lineActionContent = renderItemLineActions(o, it);
+      const lineActions = `<div class="item-row-actions${lineActionContent ? '' : ' item-row-actions--empty'}" onclick="event.stopPropagation()">${lineActionContent}</div>`;
+
+      const lineRule = it.ruleCode ? D.RULE_BY_CODE[it.ruleCode] : null;
+      const priceDiverges = it.unitPrice !== it.requestedUnitPrice;
+      const stockShort = it.ruleCode === 'SKU_AVAILABILITY' && it.status === 'ALERT'
+        && typeof it.availableQty === 'number' && it.availableQty < it.requestedQty;
+
+      function metricQty(label, requested, delivered, diverges) {
+        const reqStr = `${requested.toLocaleString()} ${it.uom}`;
+        const delStr = `${delivered.toLocaleString()} ${it.uom}`;
+        if (!diverges) {
+          return `
+            <div class="item-metric">
+              <div class="item-metric-label">${label}</div>
+              <div class="item-metric-value">${reqStr}</div>
+            </div>`;
+        }
+        return `
+          <div class="item-metric is-adjusted">
+            <div class="item-metric-label">${label}</div>
+            <div class="item-metric-value">
+              <span class="item-metric-was">${t('details.requested', { value: reqStr })}</span>
+              <span class="item-metric-arrow">→</span>
+              <span class="item-metric-now">${delStr}</span>
+            </div>
+          </div>`;
+      }
+
+      function metricPrice(label, requested, delivered, diverges) {
+        const reqStr = fmtMoney(requested);
+        const delStr = fmtMoney(delivered);
+        if (!diverges) {
+          return `
+            <div class="item-metric">
+              <div class="item-metric-label">${label}</div>
+              <div class="item-metric-value">${reqStr}</div>
+            </div>`;
+        }
+        return `
+          <div class="item-metric is-adjusted">
+            <div class="item-metric-label">${label}</div>
+            <div class="item-metric-value">
+              <span class="item-metric-was">${t('details.requested', { value: reqStr })}</span>
+              <span class="item-metric-arrow">→</span>
+              <span class="item-metric-now">${t('details.priceList', { value: delStr })}</span>
+            </div>
+          </div>`;
+      }
+
+      const issueBlock = renderItemLineIssueBlock(it, o);
+
+      const initials = it.name.split(/\s|—|-/).filter(Boolean).slice(0, 2).map((w) => w[0]).join('').toUpperCase();
+
+      return `
+        <div class="item-row item-row--${lineTone}" data-line="${it.lineNumber}">
+          <div class="item-row-main">
+            <div class="item-thumb" aria-hidden="true">${initials}</div>
+            <div class="item-identity">
+              <div class="item-identity-top">
+                <span class="item-line-num">${t('details.line', { n: String(it.lineNumber).padStart(2, '0') })}</span>
+                <span class="status-pill is-${lineTone}">${lineLabel}</span>
+              </div>
+              <div class="item-name-main">${escapeHtml(it.name)}</div>
+              <div class="item-name-meta">SKU ${it.sku} · ${escapeHtml(it.family)} · ${it.uom}</div>
+            </div>
+            <div class="item-metrics">
+              ${metricQty(t('details.reqQty'), it.requestedQty, it.qty, false)}
+              ${stockShort ? metricQty(t('details.availQty'), it.requestedQty, it.availableQty, true) : ''}
+              ${metricPrice(t('details.reqPrice'), it.requestedUnitPrice, it.unitPrice, priceDiverges)}
+              ${metricPrice(t('details.reqTotal'), it.requestedLineValue, it.lineValue, priceDiverges)}
+            </div>
+            ${lineActions}
+          </div>
+          ${issueBlock}
+        </div>
+      `;
+    }).join('');
+
+    document.getElementById('itemListWrap').innerHTML = `
+      <div class="item-list-header">
+        <h2 class="item-list-title">${t('details.products')}</h2>
+        <span class="item-list-count">${o.items.length === 1 ? t('details.itemOne', { count: o.items.length }) : t('details.itemMany', { count: o.items.length })}</span>
+      </div>
+      <div class="item-list">${itemRows}</div>
+    `;
+
+    HT.track('item_page_rendered', {
+      order_id: o.id,
+      status: o.statusId,
+      rule_category: o.ruleCode || null,
+      lines: o.items.length,
+      counts,
+    });
+  }
+
+  // ============================================================
+  // SCREEN ROUTING
+  //   #home            → Link admin landing
+  //   #orders          → EDI order list
+  //   #order/<id>      → item-level view for one order
+  // ============================================================
+  function showScreen() {
+    const hash = location.hash || '#home';
+    const orderMatch = hash.match(/^#order\/(.+)$/);
+
+    document.getElementById('railHome').classList.toggle('bees-one-rail__link--active', hash === '#home');
+    document.getElementById('railEdi').classList.toggle('bees-one-rail__link--active', hash === '#orders' || !!orderMatch);
+
+    document.getElementById('home').hidden = true;
+    document.getElementById('orders').hidden = true;
+    document.getElementById('orderItems').hidden = true;
+
+    if (orderMatch) {
+      document.getElementById('orderItems').hidden = false;
+      renderItemPage(orderMatch[1]);
+    } else {
+      closeReprocessModal();
+      closeUpcFixModal();
+      closeRejectModal();
+      if (hash === '#orders') {
+        document.getElementById('orders').hidden = false;
+        view.itemPageOrderId = null;
+        renderTable();
+      } else {
+        document.getElementById('home').hidden = false;
+        view.itemPageOrderId = null;
+      }
+    }
+    window.scrollTo(0, 0);
+  }
+  addEventListener('hashchange', showScreen);
+
+  const reprocessModalEl = document.getElementById('reprocessModal');
+  reprocessModalEl.addEventListener('click', (e) => {
+    if (e.target === reprocessModalEl) closeReprocessModal();
+  });
+  reprocessModalEl.addEventListener('cancel', (e) => {
+    e.preventDefault();
+    closeReprocessModal();
+  });
+
+  const upcFixModalEl = document.getElementById('upcFixModal');
+  upcFixModalEl.addEventListener('click', (e) => {
+    if (e.target === upcFixModalEl) closeUpcFixModal();
+  });
+  upcFixModalEl.addEventListener('cancel', (e) => {
+    e.preventDefault();
+    closeUpcFixModal();
+  });
+
+  const rejectModalEl = document.getElementById('rejectModal');
+  rejectModalEl.addEventListener('click', (e) => {
+    if (e.target === rejectModalEl) closeRejectModal();
+  });
+  rejectModalEl.addEventListener('cancel', (e) => {
+    e.preventDefault();
+    closeRejectModal();
+  });
+
+  const resolutionActionModalEl = document.getElementById('resolutionActionModal');
+  resolutionActionModalEl.addEventListener('click', (e) => {
+    if (e.target === resolutionActionModalEl) closeResolutionActionModal();
+  });
+  resolutionActionModalEl.addEventListener('cancel', (e) => {
+    e.preventDefault();
+    closeResolutionActionModal();
+  });
+
+  showScreen();
+  </script>
+</body>
+</html>

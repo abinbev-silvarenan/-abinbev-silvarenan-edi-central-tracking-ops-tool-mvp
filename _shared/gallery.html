@@ -1,0 +1,228 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Hexa Gallery</title>
+  <link rel="stylesheet" href="hexa-tokens.css" />
+  <link rel="stylesheet" href="hexa-components.css" />
+  <script src="hexa.js" defer></script>
+  <style>
+    .gal-section { margin-bottom: var(--hexa-space-3xl); }
+    .gal-icons { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: var(--hexa-space-sm); }
+    .gal-icon-cell { display: flex; flex-direction: column; align-items: center; gap: var(--hexa-space-xs); padding: var(--hexa-space-md); border: 1px solid var(--hexa-border-default); border-radius: var(--hexa-radius-md); background: var(--hexa-surface-primary); cursor: pointer; transition: all var(--hexa-duration-fast) var(--hexa-easing); text-align: center; }
+    .gal-icon-cell:hover { border-color: var(--hexa-neutral-900); transform: translateY(-2px); box-shadow: var(--hexa-elevation-neutral); }
+    .gal-icon-cell hexa-icon { width: 32px; height: 32px; }
+    .gal-icon-cell .gal-icon-name { font-size: var(--hexa-text-body-xs-size); color: var(--hexa-fg-neutral-secondary); word-break: break-word; }
+    .gal-ills { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: var(--hexa-space-md); }
+    .gal-ill-cell { display: flex; flex-direction: column; align-items: center; gap: var(--hexa-space-sm); padding: var(--hexa-space-lg); border: 1px solid var(--hexa-border-default); border-radius: var(--hexa-radius-md); background: var(--hexa-surface-primary); }
+    .gal-ill-cell hexa-illustration { width: 160px; height: 160px; }
+    .gal-search { display:flex; gap: var(--hexa-space-sm); margin-bottom: var(--hexa-space-md); }
+    .gal-search input { flex: 1; }
+    .gal-comp-row { display: flex; flex-wrap: wrap; gap: var(--hexa-space-md); align-items: center; padding: var(--hexa-space-md); border-bottom: 1px solid var(--hexa-border-default); }
+    .gal-comp-label { width: 140px; color: var(--hexa-fg-neutral-tertiary); font-size: var(--hexa-text-body-sm-size); }
+    .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%); background: var(--hexa-surface-inverse); color: var(--hexa-fg-on-inverse); padding: var(--hexa-space-sm) var(--hexa-space-lg); border-radius: var(--hexa-radius-md); opacity: 0; transition: opacity .2s; pointer-events: none; }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <header class="hexa-topbar">
+    <a class="hexa-brand" href="../">Hexa Gallery</a>
+    <nav>
+      <a href="#typography">Typography</a>
+      <a href="#components">Components</a>
+      <a href="#icons">Icons</a>
+      <a href="#illustrations">Illustrations</a>
+    </nav>
+  </header>
+
+  <main class="hexa-screen">
+
+    <section id="typography" class="gal-section">
+      <h2 class="mb-md">Typography</h2>
+      <p class="text-body-md text-fg-neutral-secondary mb-xl">Headers use <strong>Barlow</strong>. Body text uses <strong>Work Sans</strong>.</p>
+      <div class="gal-comp-row"><span class="gal-comp-label">display</span><span class="hexa-display">The image of perfection</span></div>
+      <div class="gal-comp-row"><span class="gal-comp-label">headline</span><span class="hexa-headline">The image of perfection</span></div>
+      <div class="gal-comp-row"><span class="gal-comp-label">h1</span><h1>The image of perfection</h1></div>
+      <div class="gal-comp-row"><span class="gal-comp-label">h2</span><h2>The image of perfection</h2></div>
+      <div class="gal-comp-row"><span class="gal-comp-label">h3</span><h3>The image of perfection</h3></div>
+      <div class="gal-comp-row"><span class="gal-comp-label">h4</span><h4>The image of perfection</h4></div>
+      <div class="gal-comp-row"><span class="gal-comp-label">body lg</span><span class="text-body-lg">The image of perfection</span></div>
+      <div class="gal-comp-row"><span class="gal-comp-label">body md</span><span class="text-body-md">The image of perfection</span></div>
+      <div class="gal-comp-row"><span class="gal-comp-label">body sm</span><span class="text-body-sm">The image of perfection</span></div>
+      <div class="gal-comp-row"><span class="gal-comp-label">body xs</span><span class="text-body-xs">The image of perfection</span></div>
+      <div class="gal-comp-row"><span class="gal-comp-label">caption</span><span class="text-caption">THE IMAGE OF PERFECTION</span></div>
+    </section>
+
+    <section id="components" class="gal-section">
+      <h2 class="mb-md">Components</h2>
+
+      <h3 class="mt-xl mb-md">Buttons</h3>
+      <div class="gal-comp-row"><span class="gal-comp-label">primary</span>
+        <button class="hexa-btn hexa-btn--primary hexa-btn--sm">Small</button>
+        <button class="hexa-btn hexa-btn--primary hexa-btn--md">Medium</button>
+        <button class="hexa-btn hexa-btn--primary hexa-btn--lg">Large</button>
+        <button class="hexa-btn hexa-btn--primary"><hexa-icon name="CartIcon"></hexa-icon> With icon</button>
+        <button class="hexa-btn hexa-btn--primary" disabled>Disabled</button>
+      </div>
+      <div class="gal-comp-row"><span class="gal-comp-label">secondary</span>
+        <button class="hexa-btn hexa-btn--secondary">Secondary</button>
+        <button class="hexa-btn hexa-btn--secondary"><hexa-icon name="DownloadIcon"></hexa-icon> Download</button>
+      </div>
+      <div class="gal-comp-row"><span class="gal-comp-label">tertiary</span>
+        <button class="hexa-btn hexa-btn--tertiary">Tertiary</button>
+        <button class="hexa-btn hexa-btn--tertiary"><hexa-icon name="EditIcon"></hexa-icon> Edit</button>
+      </div>
+      <div class="gal-comp-row"><span class="gal-comp-label">destructive</span>
+        <button class="hexa-btn hexa-btn--destructive">Delete account</button>
+      </div>
+      <div class="gal-comp-row"><span class="gal-comp-label">selected</span>
+        <button class="hexa-btn hexa-btn--primary hexa-btn--selected"></button>
+      </div>
+
+      <h3 class="mt-xl mb-md">Form fields</h3>
+      <div class="gal-comp-row"><span class="gal-comp-label">input</span>
+        <label class="hexa-field" style="width:280px"><span class="hexa-label">Email</span><span class="hexa-input-wrap"><input class="hexa-input" placeholder="you@company.com"/></span></label>
+      </div>
+      <div class="gal-comp-row"><span class="gal-comp-label">input + icon</span>
+        <label class="hexa-field" style="width:280px"><span class="hexa-label">Search</span><span class="hexa-input-wrap"><hexa-icon name="SearchIcon"></hexa-icon><input class="hexa-input" placeholder="Search…"/></span></label>
+      </div>
+      <div class="gal-comp-row"><span class="gal-comp-label">select</span>
+        <select class="hexa-select"><option>Option A</option><option>Option B</option></select>
+      </div>
+      <div class="gal-comp-row"><span class="gal-comp-label">textarea</span>
+        <textarea class="hexa-textarea" placeholder="Your message…" style="width:280px"></textarea>
+      </div>
+      <div class="gal-comp-row"><span class="gal-comp-label">checkbox</span>
+        <label class="hexa-check"><input type="checkbox"/> I agree</label>
+      </div>
+      <div class="gal-comp-row"><span class="gal-comp-label">radio</span>
+        <label class="hexa-radio"><input type="radio" name="r"/> Option A</label>
+        <label class="hexa-radio"><input type="radio" name="r"/> Option B</label>
+      </div>
+      <div class="gal-comp-row"><span class="gal-comp-label">toggle</span>
+        <label class="hexa-toggle"><input type="checkbox"/></label>
+      </div>
+
+      <h3 class="mt-xl mb-md">Cards</h3>
+      <div class="gal-comp-row"><span class="gal-comp-label">neutral</span>
+        <article class="hexa-card" style="width:240px"><h4>Card title</h4><p class="text-body-sm text-fg-neutral-secondary">A short description.</p></article>
+        <article class="hexa-card hexa-card--elevation" style="width:240px"><h4>Elevated</h4><p class="text-body-sm text-fg-neutral-secondary">Has a shadow.</p></article>
+        <article class="hexa-card hexa-card--brand" style="width:240px"><h4>Brand</h4><p class="text-body-sm text-fg-neutral-secondary">Highlighted variant.</p></article>
+      </div>
+
+      <h3 class="mt-xl mb-md">Tags &amp; Badges</h3>
+      <div class="gal-comp-row"><span class="gal-comp-label">tags</span>
+        <span class="hexa-tag">Default</span>
+        <span class="hexa-tag hexa-tag--brand">Brand</span>
+        <span class="hexa-tag hexa-tag--success">Success</span>
+        <span class="hexa-tag hexa-tag--warning">Warning</span>
+        <span class="hexa-tag hexa-tag--error">Error</span>
+      </div>
+      <div class="gal-comp-row"><span class="gal-comp-label">status badge</span>
+        <span class="hexa-status-badge hexa-status-badge--success">Active</span>
+        <span class="hexa-status-badge hexa-status-badge--warning">Pending</span>
+        <span class="hexa-status-badge hexa-status-badge--error">Failed</span>
+        <span class="hexa-status-badge hexa-status-badge--info">Draft</span>
+      </div>
+      <div class="gal-comp-row"><span class="gal-comp-label">notification badge</span>
+        <button class="hexa-icon-btn"><hexa-icon name="BellIcon"></hexa-icon></button>
+        <span style="position:relative"><button class="hexa-icon-btn"><hexa-icon name="BellIcon"></hexa-icon></button><span class="hexa-badge" style="position:absolute;top:-4px;right:-4px">3</span></span>
+      </div>
+
+      <h3 class="mt-xl mb-md">Chips</h3>
+      <div class="gal-comp-row"><span class="gal-comp-label">filter chips</span>
+        <button class="hexa-chip">All</button>
+        <button class="hexa-chip" aria-pressed="true">Active</button>
+        <button class="hexa-chip">Archived</button>
+        <button class="hexa-chip"><hexa-icon name="FilterIcon"></hexa-icon> Filter</button>
+      </div>
+
+      <h3 class="mt-xl mb-md">Alerts</h3>
+      <div class="flex flex-col gap-sm" style="max-width:600px">
+        <div class="hexa-alert hexa-alert--info"><hexa-icon name="AlertIcon"></hexa-icon><div class="hexa-alert-body"><div class="hexa-alert-title">Heads up</div>This is informational.</div></div>
+        <div class="hexa-alert hexa-alert--success"><hexa-icon name="CheckIcon"></hexa-icon><div class="hexa-alert-body"><div class="hexa-alert-title">Success</div>Your changes were saved.</div></div>
+        <div class="hexa-alert hexa-alert--warning"><hexa-icon name="AlertTriangleIcon"></hexa-icon><div class="hexa-alert-body"><div class="hexa-alert-title">Warning</div>Review this before continuing.</div></div>
+        <div class="hexa-alert hexa-alert--error"><hexa-icon name="AlertOctagonIcon"></hexa-icon><div class="hexa-alert-body"><div class="hexa-alert-title">Error</div>Something went wrong.</div></div>
+      </div>
+
+      <h3 class="mt-xl mb-md">Tabs &amp; Segmented Control</h3>
+      <div class="gal-comp-row"><span class="gal-comp-label">tabs</span>
+        <div class="hexa-tabs"><button class="hexa-tab" aria-selected="true">Overview</button><button class="hexa-tab">Activity</button><button class="hexa-tab">Settings</button></div>
+      </div>
+      <div class="gal-comp-row"><span class="gal-comp-label">segmented</span>
+        <div class="hexa-segments"><button aria-pressed="true">Day</button><button>Week</button><button>Month</button></div>
+      </div>
+
+      <h3 class="mt-xl mb-md">Avatar &amp; Misc</h3>
+      <div class="gal-comp-row"><span class="gal-comp-label">avatar</span>
+        <span class="hexa-avatar hexa-avatar--sm">JD</span>
+        <span class="hexa-avatar">MS</span>
+        <span class="hexa-avatar hexa-avatar--lg">AB</span>
+      </div>
+      <div class="gal-comp-row"><span class="gal-comp-label">spinner / progress</span>
+        <span class="hexa-spinner"></span>
+        <div class="hexa-progress" style="width:200px"><span style="width:60%"></span></div>
+        <div class="hexa-skeleton" style="width:120px;height:14px"></div>
+      </div>
+      <div class="gal-comp-row"><span class="gal-comp-label">breadcrumb</span>
+        <ul class="hexa-breadcrumb"><li><a href="#">Home</a></li><li><a href="#">Projects</a></li><li aria-current="page">Acme</li></ul>
+      </div>
+    </section>
+
+    <section id="icons" class="gal-section">
+      <h2 class="mb-md">Icons <span class="hexa-tag" id="iconCount">…</span></h2>
+      <p class="text-body-md text-fg-neutral-secondary mb-md">Click any icon to copy <code>&lt;hexa-icon name="…"/&gt;</code></p>
+      <div class="gal-search">
+        <span class="hexa-input-wrap" style="flex:1"><hexa-icon name="SearchIcon"></hexa-icon><input class="hexa-input" id="iconSearch" placeholder="Filter icons by name…"/></span>
+      </div>
+      <div class="gal-icons" id="iconGrid"></div>
+    </section>
+
+    <section id="illustrations" class="gal-section">
+      <h2 class="mb-md">Illustrations <span class="hexa-tag" id="illCount">…</span></h2>
+      <p class="text-body-md text-fg-neutral-secondary mb-md">Click any illustration to copy <code>&lt;hexa-illustration name="…"/&gt;</code></p>
+      <div class="gal-ills" id="illGrid"></div>
+    </section>
+
+  </main>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    function toast(msg) {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.classList.add('show');
+      setTimeout(() => t.classList.remove('show'), 1500);
+    }
+    function copy(text) { navigator.clipboard.writeText(text); toast('Copied: ' + text); }
+
+    fetch('icons.json').then(r => r.json()).then(icons => {
+      const names = Object.keys(icons).sort();
+      document.getElementById('iconCount').textContent = names.length + ' icons';
+      const grid = document.getElementById('iconGrid');
+      function render(filter) {
+        const f = (filter || '').toLowerCase();
+        grid.innerHTML = names.filter(n => !f || n.toLowerCase().includes(f)).map(n => `
+          <div class="gal-icon-cell" onclick='copy(&apos;<hexa-icon name="${n}"></hexa-icon>&apos;)'>
+            <hexa-icon name="${n}"></hexa-icon>
+            <span class="gal-icon-name">${n.replace(/Icon$/, '')}</span>
+          </div>`).join('');
+      }
+      render('');
+      document.getElementById('iconSearch').addEventListener('input', (e) => render(e.target.value));
+    });
+
+    fetch('illustrations.json').then(r => r.json()).then(ills => {
+      const names = Object.keys(ills).sort();
+      document.getElementById('illCount').textContent = names.length + ' illustrations';
+      document.getElementById('illGrid').innerHTML = names.map(n => `
+        <div class="gal-ill-cell" onclick='copy(&apos;<hexa-illustration name="${n}"></hexa-illustration>&apos;)'>
+          <hexa-illustration name="${n}"></hexa-illustration>
+          <span class="text-body-sm text-fg-neutral-secondary">${n}</span>
+        </div>`).join('');
+    });
+  </script>
+</body>
+</html>
