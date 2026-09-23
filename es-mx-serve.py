@@ -7,17 +7,26 @@ import argparse
 import http.server
 import socketserver
 import sys
+import urllib.parse
 import webbrowser
 from pathlib import Path
 
 DEFAULT_PORT = 5183
 EXPORT_ROOT = Path(__file__).resolve().parent
 PROTO_DIR = EXPORT_ROOT / "es-mx"
+# Matches GitHub Pages project URL prefix so absolute asset paths work locally too.
+GH_PAGES_PREFIX = "/-abinbev-silvarenan-edi-central-tracking-ops-tool-mvp/es-mx"
 
 
 class NoCacheHandler(http.server.SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, directory=str(PROTO_DIR), **kwargs)
+
+    def translate_path(self, path: str) -> str:
+        path = urllib.parse.unquote(path)
+        if path.startswith(GH_PAGES_PREFIX):
+            path = path[len(GH_PAGES_PREFIX) :] or "/"
+        return super().translate_path(path)
 
     def end_headers(self) -> None:
         self.send_header("Cache-Control", "no-store")
