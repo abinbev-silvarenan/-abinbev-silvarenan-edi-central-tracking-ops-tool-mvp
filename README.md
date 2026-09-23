@@ -8,6 +8,12 @@ After enabling Pages (**Settings → Pages → Branch `main` / `/ (root)`**), th
 
 **https://abinbev-silvarenan.github.io/-abinbev-silvarenan-edi-central-tracking-ops-tool-mvp/**
 
+### Spanish (Mexico) — full V4 prototype
+
+**https://abinbev-silvarenan.github.io/-abinbev-silvarenan-edi-central-tracking-ops-tool-mvp/es-mx/**
+
+Static export in `es-mx/` (Link Admin · Seguimiento EDI, product-issue flows). PM handoff: `es-mx/PM-EXPORT.md`. Local preview: `python es-mx-serve.py` → http://127.0.0.1:5183/
+
 This repository includes a `.nojekyll` file and serves assets from `shared/` (not `_shared/`) so GitHub Pages delivers all static files correctly.
 
 ## MVP scope (out of scope vs full prototype)
