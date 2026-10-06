@@ -4,9 +4,15 @@ Simplified **hypothesis prototype** for the vendor-operations EDI central tracki
 
 ## Live site (GitHub Pages)
 
-After enabling Pages (**Settings → Pages → Branch `main` / `/ (root)`**), the app is available at:
+After enabling Pages (**Settings → Pages → Branch `main` / `/ (root)`**):
 
-**https://abinbev-silvarenan.github.io/-abinbev-silvarenan-edi-central-tracking-ops-tool-mvp/**
+| Build | URL |
+|-------|-----|
+| **MVP (EN)** — hypothesis prototype with click tracking | **https://abinbev-silvarenan.github.io/-abinbev-silvarenan-edi-central-tracking-ops-tool-mvp/** |
+| **V5 es-MX** — Link Admin design handoff (React static export, no tracker) | **https://abinbev-silvarenan.github.io/-abinbev-silvarenan-edi-central-tracking-ops-tool-mvp/es-mx/v5/** |
+| es-MX version list | **https://abinbev-silvarenan.github.io/-abinbev-silvarenan-edi-central-tracking-ops-tool-mvp/es-mx/versions.html** |
+
+Source for V5: `bees-ai-pm-os` → `design/prototypes/bees-link/web-prototypes/link-admin/web/V5-es-mx`. See `es-mx/v5/PM-EXPORT.md` for review flows.
 
 ### Spanish (Mexico) — full V4 prototype
 
